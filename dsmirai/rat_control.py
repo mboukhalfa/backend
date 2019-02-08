@@ -62,7 +62,6 @@ def api_rat_trigger(iaas_name="None"):
     if iaas_name == "None":
         a = rmq.rat_trigger()
     else:
-        # TODO: match_iaas_name_ip is erased, we need to see how we can solve this
         iaas_ip = helpers.match_iaas_name_ip(iaas_name)
         a = rmq.directive_rat_trigger(iaas_ip)
     print("The returned value is {}".format(a))

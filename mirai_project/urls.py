@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from . import tasks
+from mirai_project import tasks
 
 
 urlpatterns = [
@@ -33,5 +33,5 @@ urlpatterns += [
 
 # run daemons when django starts
 
-tasks.iaas_daemon.delay()
-tasks.iaas_consumption.delay()
+# tasks.iaas_daemon.delay()
+# tasks.iaas_consumption.delay()
