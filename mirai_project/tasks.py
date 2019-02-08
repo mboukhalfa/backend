@@ -3,6 +3,8 @@ from dsmirai import iaas_deamon
 from dsmirai import rat_control
 from dsmirai import sct_control
 from dsmirai.persistent_model import dashboard_helper
+from dsmirai import linux_container_creation
+from dsmirai import linux_container_migration
 from dsmirai import onos_cleaner
 
 
@@ -48,3 +50,6 @@ def clean_onos_env():
     return
 
 
+@app.task
+def lxc_migration(container_name, num_iteration, token, ip_sdn_controller, target_cloud="None"):
+    return linux_container_migration.migrate(container_name, int(num_iteration), token, ip_sdn_controller, target_cloud)
