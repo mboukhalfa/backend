@@ -46,7 +46,7 @@ def sct_trigger():
                         print("Unable to migrate both of the cpu and the ram")
                         helpers.update_triggers_entry(request_id, "2")
                     else:
-                        while helpers.store_db_log(id_request, "1", "0", str(iaas)) != "0":
+                        while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
                             print("DB not yet updated")
                         if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
                                 value['container']:
@@ -61,7 +61,7 @@ def sct_trigger():
                         print("Unable to migrate the cpu")
                         helpers.update_triggers_entry(request_id, "2")
                     else:
-                        while helpers.store_db_log(id_request, "1", "0", str(iaas)) != "0":
+                        while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
                             print("DB not yet updated")
                         if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
                                 value['container']:
@@ -76,7 +76,7 @@ def sct_trigger():
                         print("Unable to migrate the ram")
                         helpers.update_triggers_entry(request_id, "2")
                     else:
-                        while helpers.store_db_log(id_request, "1", "0", str(iaas)) != "0":
+                        while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
                             print("DB not yet updated")
                         if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
                                 value['container']:
@@ -92,7 +92,7 @@ def sct_trigger():
                         helpers.update_triggers_entry(request_id, "2")
                     else:
                         helpers.update_triggers_entry(request_id, "1")
-                    while helpers.store_db_log(id_request, "1", "0", str(iaas)) != "0":
+                    while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
                         print("DB not yet updated")
                 elif 'node_to_scaleUp_CPU' in key:
                     request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
@@ -103,7 +103,7 @@ def sct_trigger():
                         helpers.update_triggers_entry(request_id, "2")
                     else:
                         helpers.update_triggers_entry(request_id, "1")
-                    while helpers.store_db_log(id_request, "1", "0", str(iaas)) != "0":
+                    while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
                         print("DB not yet updated")
                 elif 'node_to_scaleUp_RAM' in key:
                     request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
@@ -114,7 +114,7 @@ def sct_trigger():
                         helpers.update_triggers_entry(request_id, "2")
                     else:
                         helpers.update_triggers_entry(request_id, "1")
-                    while helpers.store_db_log(id_request, "1", "0", str(iaas)) != "0":
+                    while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
                         print("DB not yet updated")
 
         time.sleep(50)
@@ -156,7 +156,7 @@ def api_sct_trigger(iaas_name="None"):
                     print("Unable to migrate both of the cpu and the ram")
                     helpers.update_triggers_entry(request_id, "2")
                 else:
-                    while helpers.store_db_log(id_request, "1", "0", str(iaas_name)) != "0":
+                    while helpers.store_db_log(id_request, "1", str(iaas_name)) != "0":
                         print("DB not yet updated")
                     if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
                             value['container']:
@@ -171,7 +171,7 @@ def api_sct_trigger(iaas_name="None"):
                     print("Unable to migrate the cpu")
                     helpers.update_triggers_entry(request_id, "2")
                 else:
-                    while helpers.store_db_log(id_request, "1", "0", str(iaas_name)) != "0":
+                    while helpers.store_db_log(id_request, "1", str(iaas_name)) != "0":
                         print("DB not yet updated")
                     if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
                             value['container']:
@@ -186,7 +186,7 @@ def api_sct_trigger(iaas_name="None"):
                     print("Unable to migrate the ram")
                     helpers.update_triggers_entry(request_id, "2")
                 else:
-                    while helpers.store_db_log(id_request, "1", "0", str(iaas_name)) != "0":
+                    while helpers.store_db_log(id_request, "1", str(iaas_name)) != "0":
                         print("DB not yet updated")
                     if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
                             value['container']:
@@ -202,7 +202,7 @@ def api_sct_trigger(iaas_name="None"):
                     helpers.update_triggers_entry(request_id, "2")
                 else:
                     helpers.update_triggers_entry(request_id, "1")
-                while helpers.store_db_log(id_request, "1", "0", str(iaas_name)) != "0":
+                while helpers.store_db_log(id_request, "1", str(iaas_name)) != "0":
                     print("DB not yet updated")
             elif 'node_to_scaleUp_CPU' in key:
                 request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
@@ -213,7 +213,7 @@ def api_sct_trigger(iaas_name="None"):
                     helpers.update_triggers_entry(request_id, "2")
                 else:
                     helpers.update_triggers_entry(request_id, "1")
-                while helpers.store_db_log(id_request, "1", "0", str(iaas_name)) != "0":
+                while helpers.store_db_log(id_request, "1", str(iaas_name)) != "0":
                     print("DB not yet updated")
             elif 'node_to_scaleUp_RAM' in key:
                 request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
@@ -224,7 +224,7 @@ def api_sct_trigger(iaas_name="None"):
                     helpers.update_triggers_entry(request_id, "2")
                 else:
                     helpers.update_triggers_entry(request_id, "1")
-                while helpers.store_db_log(id_request, "1", "0", str(iaas_name)) != "0":
+                while helpers.store_db_log(id_request, "1", str(iaas_name)) != "0":
                     print("DB not yet updated")
 
 

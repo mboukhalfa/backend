@@ -38,7 +38,6 @@ class IpsPorts(models.Model):
     container = models.ForeignKey(Container, on_delete=models.CASCADE)
     ip_address = models.TextField(max_length=120)
     port = models.IntegerField()
-    usage = models.IntegerField()
 
 
 class Monitoring(models.Model):
@@ -47,6 +46,7 @@ class Monitoring(models.Model):
     cpu_data = models.IntegerField()
     ram_data = models.IntegerField()
 
+
 class Triggers(models.Model):
     container = models.ForeignKey(Container, on_delete=models.CASCADE)
     trigger_type = models.TextField(max_length=120)
@@ -54,8 +54,7 @@ class Triggers(models.Model):
     trigger_time = models.DateTimeField(default=datetime.datetime.now)
     trigger_result = models.TextField(max_length=120, null=True)
 
-class OverlayInterface(models.Model):
-    interface_name = models.TextField(max_length=120)
+
 
 class Log(models.Model):
     server_name = models.TextField(max_length=120)

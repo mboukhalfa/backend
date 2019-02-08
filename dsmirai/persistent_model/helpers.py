@@ -1,10 +1,8 @@
 from mirai.models import Log
 from mirai.models import IpsPorts
-from mirai.models import OverlayInterface
 from mirai.models import Triggers
 from mirai.models import IaaS
 import datetime
-import time
 import random
 from netaddr import IPNetwork
 
@@ -25,14 +23,12 @@ def get_ip_port_sdn_network():
     return ip_address, ip_address.split(".")[3]
 
 
-def store_db_log(id, result, usage, iaas):
+def store_db_log(id, result, iaas):
     process = Log.objects.get(pk=id)
     process.result = result
-    process.usage = usage
     process.iaas = iaas
     process.save()
     return process.usage
-
 
 
 def name_control(container_name):
@@ -42,24 +38,16 @@ def name_control(container_name):
     return True
 
 
-
-def delete_all_entries_db(table):
-    for entry in table.objects.all():
-        entry.delete()
-
-
-
-
 def add_entry_ip_ports(container_name):
     ip_address, port_number = get_ip_port_sdn_network()
-    x = IpsPorts(ip_address=str(ip_address), container_name=str(container_name), port=int(port_number), usage=1)
+    x = IpsPorts(ip_address=str(ip_address), container_name=str(container_name), port=int(port_number))
     x.save()
     return port_number, ip_address
 
 
 def add_vxlan_ip_ports(container_name):
     ip_address, port_number = get_ip_port_sdn_network()
-    x = IpsPorts(ip_address=str(ip_address), container_name=str(container_name), port=int(port_number), usage=1)
+    x = IpsPorts(ip_address=str(ip_address), container_name=str(container_name), port=int(port_number))
     x.save()
     return port_number
 
@@ -81,31 +69,9 @@ def matching_ip(container_name):
     return x.ip_address
 
 
-
-
-
-def verify_overlay_interface(interface_name):
-    found = OverlayInterface.objects.filter(interface_name=interface_name).first()
-    if found is None:
-        return False
-    return True
-
-
-def add_overlay_interface(interface_name):
-    x = OverlayInterface(interface_name=interface_name)
-    x.save()
-    return True
-
-
 def get_overlay_port(interface_name):
     x = IpsPorts.objects.filter(container_name=interface_name).first()
     return x.port
-
-
-def delete_interface():
-    for entry in OverlayInterface.objects.all():
-        entry.delete()
-
 
 
 def get_intent_priority(container_name):
@@ -151,6 +117,7 @@ def update_triggers_entry(id, trigger_result):
 helper related to the IaaS discovery
 '''
 
+
 def available_iaas():
     tab = {}
     for entry in IaaS.objects.all():
@@ -182,9 +149,6 @@ def update_configuration_iaas(ip_address, state):
             entry.save()
 
 
-
-
-
 def verify_infinite_handler(ip_address):
     for entry in IaaS.objects.all():
         if entry.iaas_ip == ip_address and entry.iaas_state == "DOWN" and entry.iaas_configuration == "DOWN":
@@ -198,5 +162,6 @@ def number_minions():
         if entry.iaas_state == "UP" and entry.iaas_configuration == "UP":
             number_minion += 1
     return number_minion
+
 
 

@@ -73,14 +73,13 @@ def migrate(container_name, num_iteration, token1, ip_sdn_controller, target_clo
             if winner_minion[1] <= cpu or winner_minion[2] <= ram:
                 print("***********The Global Orchestrator***********")
                 print("Resources issues, no available resource to host the container in the target destination")
-                while helpers.store_db_log(id_request, "3", "0", "None") != "0":
+                while helpers.store_db_log(id_request, "3", "None") != "0":
                     print("DB not yet updated")
                 return
             ip_destination = winner_minion[0]
             print("***********The Global Orchestrator***********")
             print("we are able to find a vm destination")
             print("the IP address of the chosen node is: {}".format(ip_destination))
-
 
             client_device, client_port_number, client_ip_address, ip_vm_client = onos.sdn_host_information(
                 ip_sdn_controller, helpers.matching(container_name))
@@ -113,14 +112,13 @@ def migrate(container_name, num_iteration, token1, ip_sdn_controller, target_clo
             if not onos.verify_links(ip_sdn_controller, client_device, mac_ovs_destination):
 
                 vxlan_port = helpers.add_vxlan_ip_ports(interface_name)
+                print("new vxlan_port is: {}".format(vxlan_port))
 
                 print("starting the VxLAN channel")
                 intents.overlay_network(ip_vm_client, ip_destination, ovs_source, ovs_destination, interface_name,
                                         vxlan_port)
                 print("successful VxLAN creation")
 
-                helpers.add_overlay_interface(interface_name)
-                print("new vxlan_port is: {}".format(vxlan_port))
 
             else:
                 if not onos.verify_local_distant_devices(ip_sdn_controller, client_device, mac_ovs_destination):
@@ -132,7 +130,6 @@ def migrate(container_name, num_iteration, token1, ip_sdn_controller, target_clo
                 else:
                     vxlan_port = 1
                     print("existing vxlan_port local is: {}".format(vxlan_port))
-
 
             intents.target_container_bridge_ovs(container_name, ip_destination, ovs_destination,
                                                 server_port_number)
@@ -181,7 +178,7 @@ def migrate(container_name, num_iteration, token1, ip_sdn_controller, target_clo
             if answer != 1:
                 print("validate migration failed")
                 return "Error"
-            while helpers.store_db_log(id_request, str(result), "0", str(iaas_migration)) != "0":
+            while helpers.store_db_log(id_request, str(result), str(iaas_migration)) != "0":
                 print("DB not yet updated")
             if result != 1:
                 print("system part migration failed")

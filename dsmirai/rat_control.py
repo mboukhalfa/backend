@@ -44,7 +44,7 @@ def rat_trigger():
                 request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
                                                            "migrate_rat", datetime.datetime.now(), "0")
                 print("migrate the container {} localized in {}".format(value['container'], value['VM_ip']))
-                while helpers.store_db_log(id_request, "1", "0", str(iaas)) != "0":
+                while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
                     print("DB not yet updated")
                 if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
                         value['container']:
@@ -55,7 +55,6 @@ def rat_trigger():
         time.sleep(50)
 
 
-
 def api_rat_trigger(iaas_name="None"):
     rmq = client_broker.ClientBroker("rat_queue")
     trigger_type = "rat_trigger"
@@ -63,6 +62,7 @@ def api_rat_trigger(iaas_name="None"):
     if iaas_name == "None":
         a = rmq.rat_trigger()
     else:
+        # TODO: match_iaas_name_ip is erased, we need to see how we can solve this
         iaas_ip = helpers.match_iaas_name_ip(iaas_name)
         a = rmq.directive_rat_trigger(iaas_ip)
     print("The returned value is {}".format(a))
@@ -89,7 +89,7 @@ def api_rat_trigger(iaas_name="None"):
             request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
                                                        "migrate_rat", datetime.datetime.now(), "0")
             print("migrate the container {} localized in {}".format(value['container'], value['VM_ip']))
-            while helpers.store_db_log(id_request, "1", "0", str(iaas_name)) != "0":
+            while helpers.store_db_log(id_request, "1", str(iaas_name)) != "0":
                 print("DB not yet updated")
             if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
                     value['container']:
