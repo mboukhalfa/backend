@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from mirai.models import IaaSConsumption, IaaS, Container, Log
+from mirai.models import IaaSConsumption, IaaS, Container
 import uuid
-from mirai_project import tasks
+from mirai import tasks
 
 
 class EnvStatusSerializer(serializers.Serializer):
@@ -38,6 +38,7 @@ class ContainerSerializer(serializers.ModelSerializer):
         print(validated_data)
         uid = str(uuid.uuid4())
         print(uid)
+        tasks.lxc_creation.delay()
         
         
         return Container.objects.create(**validated_data)

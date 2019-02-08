@@ -138,7 +138,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # CELERY
-CELERY_BROKER_URL = 'amqp://mqadmin:mqadminpassword@195.148.125.125'
+CELERY_BROKER_URL = 'amqp://localhost//'
 # CELERY_TASK_ALWAYS_EAGER = True
 
 REST_FRAMEWORK = {

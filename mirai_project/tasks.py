@@ -7,8 +7,6 @@ from dsmirai import linux_container_creation
 from dsmirai import linux_container_migration
 from dsmirai import onos_cleaner
 
-from mirai.models import Log
-
 
 @app.task
 def iaas_daemon():
@@ -51,12 +49,6 @@ def clean_onos_env():
     onos_cleaner.clean_onos()
     return
 
-
-@app.task
-def lxc_creation():
-    print('labess 3lik 3omri labesssss')
-    # Log.objects.create(server_name = "nonretour",result = "test",code = "test",client_name = "test",token = "test",usage = "test")
-    # return linux_container_creation.create()
 
 @app.task
 def lxc_migration(container_name, num_iteration, token, ip_sdn_controller, target_cloud="None"):

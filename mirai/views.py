@@ -15,14 +15,6 @@ from mirai.serializers import (IaaSSerializer,
                                IaasResourceConsumptionSerializer,
                                ContainerSerializer)
 
-
-class Test(APIView):
-
-    def get(self, request, format=None):
-        # Log.objects.create(server_name = "fayrouz",result = "test",code = "test",client_name = "test",token = "test",usage = "test")
-        tasks.test.delay()
-
-        return Response({"status": "success"})
     
 
 class EnvStatus(APIView):

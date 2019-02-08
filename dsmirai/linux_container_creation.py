@@ -14,12 +14,10 @@ Code communication: create = 001
 3 = resources not available
 4 = race condition
 """
+
 from mirai.models import Log
 
-def create():
-    Log.objects.create(server_name = "test",result = "test",code = "test",client_name = "test",token = "test",usage = "test")
-    
-def create1(container_name, client, cpu, ram, token1, ip_sdn_controller, container_placement="None",
+def create(container_name, client, cpu, ram, ip_sdn_controller, container_placement="None",
            application_type="video"):
     print(container_name)
     """

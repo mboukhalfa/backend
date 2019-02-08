@@ -15,5 +15,4 @@ urlpatterns = [
     path('', include(router.urls)),
     path('', include(iaas_router.urls)),
     path('env-status/', views.EnvStatus.as_view(), name="env_status"),
-    path('test/', views.Test.as_view(), name="test"),
 ]
