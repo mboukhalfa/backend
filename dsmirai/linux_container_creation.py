@@ -22,7 +22,6 @@ def create():
 def create1(container_name, client, cpu, ram, token1, ip_sdn_controller, container_placement="None",
            application_type="video"):
     print(container_name)
-    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
     """
     :param container_name:
     :param client:

@@ -25,11 +25,15 @@ SECRET_KEY = 'd$+wc^hbgqf5f**sur!s_#&r=*zdpl6ipoorzk+kp^ndzd^(&1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    '195.148.125.104'
+]
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     '127.0.0.1',
-    'localhost:4200'
+    'localhost:4200',
+    '195.148.125.104'
 )
 
 
@@ -135,7 +139,7 @@ STATIC_URL = '/static/'
 
 # CELERY
 CELERY_BROKER_URL = 'amqp://mqadmin:mqadminpassword@195.148.125.125'
-# CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_ALWAYS_EAGER = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

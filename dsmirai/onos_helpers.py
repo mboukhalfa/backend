@@ -2,7 +2,7 @@ import pycurl
 from io import BytesIO
 import json
 from dsmirai.persistent_model import helpers
-import dsmirai.virtual_machine as system_driver
+import dsmirai.utils as system_driver
 
 
 class OnosHelpers:

@@ -1,5 +1,5 @@
 import dsmirai.onos_helpers as onos_helpers
-import dsmirai.virtual_machine as system_driver
+import dsmirai.utils as system_driver
 
 
 class IntentBasedNetworking:
