@@ -40,14 +40,16 @@ def name_control(container_name):
 
 def add_entry_ip_ports(container_name):
     ip_address, port_number = get_ip_port_sdn_network()
-    x = IpsPorts(ip_address=str(ip_address), container_name=str(container_name), port=int(port_number))
+    x = IpsPorts(ip_address=str(ip_address), container_name=str(
+        container_name), port=int(port_number))
     x.save()
     return port_number, ip_address
 
 
 def add_vxlan_ip_ports(container_name):
     ip_address, port_number = get_ip_port_sdn_network()
-    x = IpsPorts(ip_address=str(ip_address), container_name=str(container_name), port=int(port_number))
+    x = IpsPorts(ip_address=str(ip_address), container_name=str(
+        container_name), port=int(port_number))
     x.save()
     return port_number
 
@@ -85,6 +87,7 @@ def get_intent_priority(container_name):
 def match_containers_iaas(container_name):
     x = Log.objects.filter(server_name=container_name).last()
     return x.iaas
+
 
 '''
 helper related to the Triggers
@@ -164,4 +167,8 @@ def number_minions():
     return number_minion
 
 
-
+def match_iaas_name_ip(iaas_name):
+    for entry in IaaS.objects.all():
+        if entry.iaas_name == iaas_name:
+            return entry.iaas_ip
+    return "Error"
