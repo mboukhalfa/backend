@@ -19,7 +19,7 @@ class IaaS(models.Model):
 
 
 class IaaSConsumption(models.Model):
-    iaas = models.ForeignKey(IaaS,related_name='consumptions', on_delete=models.CASCADE)
+    iaas_name = models.ForeignKey(IaaS, related_name='consumptions', on_delete=models.CASCADE)
     iaas_ram = models.IntegerField()
     iaas_disk = models.FloatField()
     iaas_cpu = models.IntegerField()
@@ -30,7 +30,7 @@ class IaaSConsumption(models.Model):
 
 
 class Container(models.Model):
-    iaas = models.ForeignKey(IaaS, on_delete=models.CASCADE)
+    iaas_name = models.ForeignKey(IaaS, on_delete=models.CASCADE)
     container_name = models.TextField(max_length=120)
 
 
