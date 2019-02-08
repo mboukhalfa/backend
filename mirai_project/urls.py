@@ -33,5 +33,5 @@ urlpatterns += [
 
 # run daemons when django starts
 
-# tasks.iaas_daemon.delay()
-# tasks.iaas_consumption.delay()
+tasks.iaas_daemon.delay()
+tasks.iaas_consumption.delay()

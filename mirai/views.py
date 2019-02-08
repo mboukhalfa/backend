@@ -4,7 +4,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework.response import Response
-from mirai_project import tasks
+from mirai import tasks
+
 
 from mirai.permissions import IsOwner
 from mirai.models import IaaS, IaaSConsumption, Container, Log # TODO
@@ -19,7 +20,8 @@ class Test(APIView):
 
     def get(self, request, format=None):
         # Log.objects.create(server_name = "fayrouz",result = "test",code = "test",client_name = "test",token = "test",usage = "test")
-        tasks.lxc_creation.delay()
+        tasks.test.delay()
+
         return Response({"status": "success"})
     
 

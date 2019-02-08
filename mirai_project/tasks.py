@@ -9,6 +9,7 @@ from dsmirai import onos_cleaner
 
 from mirai.models import Log
 
+
 @app.task
 def iaas_daemon():
     iaas_deamon.iaas_discovery()
@@ -53,7 +54,8 @@ def clean_onos_env():
 
 @app.task
 def lxc_creation():
-    Log.objects.create(server_name = "nonretour",result = "test",code = "test",client_name = "test",token = "test",usage = "test")
+    print('labess 3lik 3omri labesssss')
+    # Log.objects.create(server_name = "nonretour",result = "test",code = "test",client_name = "test",token = "test",usage = "test")
     # return linux_container_creation.create()
 
 @app.task
