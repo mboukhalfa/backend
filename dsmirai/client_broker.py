@@ -270,7 +270,7 @@ class ClientBroker(object):
         print("awesome end of -- validate_migration --")
         return ast.literal_eval(self.response.decode())
 
-    def rat_trigger(self):
+    def rat_trigger(self, routing_key):
         self.response = None
         self.rat = {}
         self.corr_id = str(uuid.uuid4())
@@ -283,55 +283,34 @@ class ClientBroker(object):
         print("sending ... {}".format(message))
 
         self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key='star' + self.exchange.split('_')[0],
+                                   routing_key=routing_key,
                                    properties=pika.BasicProperties(
                                        reply_to=self.callback_queue,
                                        correlation_id=self.corr_id,
                                    ),
                                    body=str(message))
 
-        while self.counter < helpers.number_minions():
-            self.connection.process_data_events()
-
-        print("the main number of -- rat_trigger --:")
-        print(helpers.number_minions())
-        for i in range(len(self.magic)):
-            print("The value of the response of -- rat_trigger -- is: ")
-            print(self.magic[i])
-            self.rat.update(ast.literal_eval(self.magic[i]))
+        if "star" in routing_key:
+            while self.counter < helpers.number_minions():
+                self.connection.process_data_events()
+            print("the main number of -- rat_trigger --:")
+            print(helpers.number_minions())
+            for i in range(len(self.magic)):
+                print("The value of the response of -- rat_trigger -- is: ")
+                print(self.magic[i])
+                self.rat.update(ast.literal_eval(self.magic[i]))
+        else:
+            while self.response is None:
+                self.connection.process_data_events()
+            print("The value of the response of -- directive_rat_trigger -- is: ")
+            print(self.magic[0])
+            self.rat.update(ast.literal_eval(self.magic[0]))
         self.counter = 0
         self.magic = []
         print("awesome end of -- rat_trigger --")
         return self.rat
 
-    def directive_rat_trigger(self, ip_address):
-        self.response = None
-        self.rat = {}
-        self.corr_id = str(uuid.uuid4())
-        self.channel.exchange_declare(exchange=self.exchange,
-                                      exchange_type='direct')
-
-        print("***********The Global Orchestrator Client Broker -- directive_rat_trigger --***********")
-        message = 'directive_rat_trigger#{}'.format(ip_address)
-        print("sending ... {}".format(message))
-
-        self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key=ip_address,
-                                   properties=pika.BasicProperties(reply_to=self.callback_queue,
-                                                                   correlation_id=self.corr_id, ),
-                                   body=str(message))
-
-        while self.response is None:
-            self.connection.process_data_events()
-        print("The value of the response of -- directive_rat_trigger -- is: ")
-        print(self.magic[0])
-        self.rat.update(ast.literal_eval(self.magic[0]))
-        self.magic = []
-        self.counter = 0
-        print("awesome end of -- directive_rat_trigger --")
-        return self.rat
-
-    def sct_trigger(self):
+    def sct_trigger(self, routing_key):
         self.response = None
         self.sct = {}
         self.corr_id = str(uuid.uuid4())
@@ -344,52 +323,31 @@ class ClientBroker(object):
         print("sending ... {}".format(message))
 
         self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key='star' + self.exchange.split('_')[0],
+                                   routing_key=routing_key,
                                    properties=pika.BasicProperties(
                                        reply_to=self.callback_queue,
                                        correlation_id=self.corr_id,
                                    ),
                                    body=str(message))
 
-        while self.counter < helpers.number_minions():
-            self.connection.process_data_events()
-
-        print("the main number of -- sct_trigger --:")
-        print(helpers.number_minions())
-        for i in range(len(self.magic)):
-            print("The value of the response of -- sct_trigger -- is: ")
-            print(self.magic[i])
-            self.sct.update(ast.literal_eval(self.magic[i]))
+        if "star" in routing_key:
+            while self.counter < helpers.number_minions():
+                self.connection.process_data_events()
+            print("the main number of -- sct_trigger --:")
+            print(helpers.number_minions())
+            for i in range(len(self.magic)):
+                print("The value of the response of -- sct_trigger -- is: ")
+                print(self.magic[i])
+                self.sct.update(ast.literal_eval(self.magic[i]))
+        else:
+            while self.response is None:
+                self.connection.process_data_events()
+            print("The value of the response of -- directive_sct_trigger -- is: ")
+            print(self.magic[0])
+            self.sct.update(ast.literal_eval(self.magic[0]))
         self.counter = 0
         self.magic = []
         print("awesome end of -- sct_trigger --")
-        return self.sct
-
-    def directive_sct_trigger(self, ip_address):
-        self.response = None
-        self.sct = {}
-        self.corr_id = str(uuid.uuid4())
-        self.channel.exchange_declare(exchange=self.exchange,
-                                      exchange_type='direct')
-
-        print("***********The Global Orchestrator Client Broker -- directive_sct_trigger --***********")
-        message = 'directive_sct_trigger#{}'.format(ip_address)
-        print("sending ... {}".format(message))
-
-        self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key=ip_address,
-                                   properties=pika.BasicProperties(reply_to=self.callback_queue,
-                                                                   correlation_id=self.corr_id, ),
-                                   body=str(message))
-
-        while self.response is None:
-            self.connection.process_data_events()
-        print("The value of the response of -- directive_sct_trigger -- is: ")
-        print(self.magic[0])
-        self.sct.update(ast.literal_eval(self.magic[0]))
-        self.magic = []
-        self.counter = 0
-        print("awesome end of -- directive_sct_trigger --")
         return self.sct
 
     def scale_up_cpu_ram(self, container_name, creation_ip_address, cpu, ram):

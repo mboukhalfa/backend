@@ -12,15 +12,15 @@ import uuid
 0 = start the trigger
 1 = successful trigger event
 """
+queue_name = "rat_queue"
+ip_sdn_controller = "195.148.125.90"
+trigger_type = "rat_trigger"
 
 
 def rat_trigger():
-    rmq = client_broker.ClientBroker("rat_queue")
-    trigger_type = "rat_trigger"
-    ip_sdn_controller = "195.148.125.90"
-
+    rmq = client_broker.ClientBroker(queue_name)
     while True:
-        a = rmq.rat_trigger()
+        a = rmq.rat_trigger("star" + queue_name.split('_')[0])
         print("The returned value is {}".format(a))
         ntm = decision_rat(a)
 
@@ -55,14 +55,13 @@ def rat_trigger():
 
 
 def api_rat_trigger(iaas_name="None"):
-    rmq = client_broker.ClientBroker("rat_queue")
-    trigger_type = "rat_trigger"
-    ip_sdn_controller = "195.148.125.90"
+
+    rmq = client_broker.ClientBroker(queue_name)
     if iaas_name == "None":
-        a = rmq.rat_trigger()
+        a = rmq.rat_trigger("star" + queue_name.split('_')[0])
     else:
         iaas_ip = helpers.match_iaas_name_ip(iaas_name)
-        a = rmq.directive_rat_trigger(iaas_ip)
+        a = rmq.rat_trigger(iaas_ip)
     print("The returned value is {}".format(a))
     ntm = decision_rat(a)
 
