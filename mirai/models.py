@@ -31,7 +31,7 @@ class IaaSConsumption(models.Model):
 
 class Container(models.Model):
     iaas_name = models.ForeignKey(IaaS, on_delete=models.CASCADE)
-    container_name = models.TextField(max_length=120)
+    container_name = models.TextField(unique=True, max_length=120)
 
 
 class IpsPorts(models.Model):
