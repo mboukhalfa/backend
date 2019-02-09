@@ -14,7 +14,10 @@ Code communication:
 2 = resources not available
 3 = race condition
 """
-CREATED = 1 , NOT_CREATED = -1, RESOURCE_ERR = 2, RACE = 3 
+CREATED = 1
+NOT_CREATED = -1
+RESOURCE_ERR = 2
+RACE = 3 
 
 def create(container_name, client, cpu, ram, container_placement="None",
            application_type="video"):
@@ -73,4 +76,4 @@ def create(container_name, client, cpu, ram, container_placement="None",
         print("DB not yet updated")
 
 
-return container_name # TODO: Check Code on top 
+    return container_name # TODO: Check Code on top 

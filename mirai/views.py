@@ -8,14 +8,13 @@ from mirai import tasks
 
 
 from mirai.permissions import IsOwner
-from mirai.models import IaaS, IaaSConsumption, Container, Log # TODO
+from mirai.models import IaaS, IaaSConsumption, Container, Log  # TODO
 
 from mirai.serializers import (IaaSSerializer,
                                EnvStatusSerializer,
                                IaasResourceConsumptionSerializer,
                                ContainerSerializer)
 
-    
 
 class EnvStatus(APIView):
     """
@@ -59,6 +58,7 @@ class IaasViewSet(viewsets.ModelViewSet):
     """
     CRUD IaaS
     """
+
     def get_queryset(self):
         return IaaS.objects.filter(iaas_owner=self.request.user)
     queryset = IaaS.objects.none()
@@ -73,7 +73,23 @@ class ContainerViewSet(viewsets.ModelViewSet):
     """
     CRUD Container
     """
+
     def get_queryset(self):
-        return Container.objects.filter(iaas_name__iaas_owner=self.request.user)#, iaas=self.kwargs['iaas_pk'])
+        # , iaas=self.kwargs['iaas_pk'])
+        return Container.objects.filter(iaas_name__iaas_owner=self.request.user)
     queryset = Container.objects.none()
     serializer_class = ContainerSerializer
+
+
+class Migrate(APIView):
+    """
+    The dashboard page where various information on the infrastructure are displayed
+    """
+    def valid_iaas():
+        pass
+    def valid_container():
+        pass
+    def get(self, request, container, to_iaas, format=None):
+        # tasks.lxc_migration.delay(container['name'], 3, str(uuid.uuid4()), ip_sdn_controller, container['target_cloud'])
+        return Response({"container": container, "to_iaas": to_iaas})
+

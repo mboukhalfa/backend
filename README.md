@@ -1,6 +1,6 @@
 # MIRA! Project
 
-One Paragraph of project description goes here
+MIRA! is a framework of live migration.
 
 ## Getting Started
 
@@ -16,7 +16,7 @@ Give examples
 
 ### Installing
 
-Activate virtual envirement development env running
+Activate virtual env
 
 
 ```
@@ -39,6 +39,14 @@ Run celery worker
 celery -A mirai_project worker -l info
 ```
 
+Run Django
+
+
+```
+python manage.py runserver
+```
+
+
 ## Shutdown
 
 Shutdown celery worker
@@ -51,7 +59,7 @@ celery -A mirai_project control shutdown
 ## Built With
 
 * [Django](https://www.djangoproject.com/) - The web framework used
-* [ROME](https://www.django-rest-framework.org/) - Used to generate REST API
+* [DRF](https://www.django-rest-framework.org/) - Used to generate REST API
 * [Pipenv](https://pipenv.readthedocs.io/en/latest/) - Dependency Management
 
 
