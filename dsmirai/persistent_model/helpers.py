@@ -54,8 +54,8 @@ def add_vxlan_ip_ports(container_name):
     return port_number
 
 
-def insert_entry(container_name, result, code, new_container_name, token, usage, iaas):
-    x = Log(server_name=container_name, result=result, code=code, client_name=new_container_name, token=token,
+def insert_entry(container_name, result, code, new_container_name, usage, iaas):
+    x = Log(server_name=container_name, result=result, code=code, client_name=new_container_name,
             usage=usage, iaas=iaas)
     x.save()
     return x.pk

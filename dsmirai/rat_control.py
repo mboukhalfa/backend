@@ -39,7 +39,7 @@ def rat_trigger():
             else:
                 print("the rat_trigger is activated")
                 iaas = helpers.match_containers_iaas(value['container'])
-                id_request = helpers.insert_entry(value['container'], "None", "003", "RAT", str(uuid.uuid4()), "1",
+                id_request = helpers.insert_entry(value['container'], "None", "003", "RAT", "1",
                                                   str(iaas))
                 request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
                                                            "migrate_rat", datetime.datetime.now(), "0")
@@ -83,7 +83,7 @@ def api_rat_trigger(iaas_name="None"):
                 iaas_name = helpers.match_containers_iaas(value['container'])
 
             print("the api_rat_trigger is activated")
-            id_request = helpers.insert_entry(value['container'], "None", "003", "RAT", str(uuid.uuid4()), "1",
+            id_request = helpers.insert_entry(value['container'], "None", "003", "RAT", "1",
                                               str(iaas_name))
             request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
                                                        "migrate_rat", datetime.datetime.now(), "0")

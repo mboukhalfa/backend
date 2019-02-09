@@ -61,7 +61,6 @@ class Log(models.Model):
     result = models.TextField(max_length=50)
     code = models.TextField(max_length=120)
     client_name = models.TextField(max_length=120)
-    token = models.TextField(max_length=120)
     usage = models.TextField(max_length=120)
     iaas = models.TextField(max_length=120, default="None")
     cpu = models.TextField(max_length=120, default="1")
@@ -69,6 +68,6 @@ class Log(models.Model):
     application_type = models.TextField(max_length=120, default="video")
 
     def __str__(self):
-        return "server_name: {} result: {} code: {} client_name: {} token: {} usage: {} iaas: {} cpu: {} ram: {} " \
-               "application_type: {}".format(self.server_name, self.result, self.code, self.client_name, self.token,
-                                             self.usage, self.iaas, self.cpu, self.ram, self.application_type)
+        return "server_name: {} result: {} code: {} client_name: {} usage: {} iaas: {} cpu: {} ram: {} " \
+            "application_type: {}".format(self.server_name, self.result, self.code, self.client_name, self.usage,
+                                            self.iaas, self.cpu, self.ram, self.application_type)

@@ -35,7 +35,7 @@ def sct_trigger():
             else:
                 print("the sct_trigger is activated")
                 iaas = helpers.match_containers_iaas(value['container'])
-                id_request = helpers.insert_entry(value['container'], "None", "003", "SCT", str(uuid.uuid4()), "1",
+                id_request = helpers.insert_entry(value['container'], "None", "003", "SCT", "1",
                                                   str(iaas))
                 if 'node_to_migrate_CPU_RAM' in key:
 
@@ -145,7 +145,7 @@ def api_sct_trigger(iaas_name="None"):
             print("the sct_trigger is activated")
             if iaas_name == "None":
                 iaas_name = helpers.match_containers_iaas(value['container'])
-            id_request = helpers.insert_entry(value['container'], "None", "003", "SCT", str(uuid.uuid4()), "1",
+            id_request = helpers.insert_entry(value['container'], "None", "003", "SCT", "1",
                                               str(iaas_name))
             if 'node_to_migrate_CPU_RAM' in key:
 

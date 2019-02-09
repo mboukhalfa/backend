@@ -22,7 +22,7 @@ Code communication: migrate = 002
 
 
 
-def migrate(container_name, num_iteration, token1, ip_sdn_controller, target_cloud="None"):
+def migrate(container_name, num_iteration, ip_sdn_controller, target_cloud="None"):
     rmq = client_broker.ClientBroker("migration_queue")
     onos = onos_helpers.OnosHelpers()
     intents = intent_based_networking.IntentBasedNetworking()
@@ -32,10 +32,10 @@ def migrate(container_name, num_iteration, token1, ip_sdn_controller, target_clo
 
     if not helpers.name_control(container_name):
         print("The requested container is already in a another process")
-        id_request = helpers.insert_entry(container_name, "4", "002", "model", token1, "0", "None")
+        id_request = helpers.insert_entry(container_name, "4", "002", "model", "0", "None")
         return
     else:
-        id_request = helpers.insert_entry(container_name, "None", "002", "model", token1, "1", "None")
+        id_request = helpers.insert_entry(container_name, "None", "002", "model", "1", "None")
         if rmq.verify_unique_name(container_name):
             print("***********The Global Orchestrator***********")
             print("find the container to migrate")
@@ -190,5 +190,5 @@ def migrate(container_name, num_iteration, token1, ip_sdn_controller, target_clo
             print("***********The Global Orchestrator***********")
             print("container doesn't exist")
 
-            id_request = helpers.insert_entry(container_name, "2", "002", "model", token1, "0", "None")
+            id_request = helpers.insert_entry(container_name, "2", "002", "model", "0", "None")
             return

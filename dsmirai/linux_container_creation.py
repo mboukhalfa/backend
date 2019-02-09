@@ -25,7 +25,7 @@ def create(container_name, client, cpu, ram, container_placement="None",
     rmq = client_broker.ClientBroker("creation_queue")
     intents = intent_based_networking.IntentBasedNetworking()
     id_request = helpers.insert_entry(
-        container_name, "None", "001", client, token1, "1", "None")
+        container_name, "None", "001", client, "1", "None")
 
     if container_placement == "None":
         table_statistics = rmq.verify_resource_creation()
@@ -42,7 +42,7 @@ def create(container_name, client, cpu, ram, container_placement="None",
         print("Resources issues")
 
         # TODO: Please check this loop !
-        while helpers.store_db_log(id_request, "3", "0", "None") != "0":
+        while helpers.store_db_log(id_request, "3", "None") != "0":
             print("DB not yet updated")
         return "Error" # TODO: Check Code on top 
     creation_ip_address = winner_minion[0]
@@ -72,7 +72,7 @@ def create(container_name, client, cpu, ram, container_placement="None",
     vsh.enable_remote_video_streaming(creation_ip_address, str(int(client_port_number) + 1024),
                                       client_ip_address)
     # TODO: please check this loop !
-    while helpers.store_db_log(id_request, str(result), "0", iaas_creation) != "0":
+    while helpers.store_db_log(id_request, str(result), iaas_creation) != "0":
         print("DB not yet updated")
 
 
