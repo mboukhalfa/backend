@@ -191,7 +191,7 @@ class OnosHelpers:
             print(list_of_links[i]['devicesrc'])
             print("device destination")
             print(list_of_links[i]['devicedst'])
-            if (list_of_links[i]['devicesrc'] == device_source and list_of_links[i]['devicedst'] == device_destination)\
+            if (list_of_links[i]['devicesrc'] == device_source and list_of_links[i]['devicedst'] == device_destination) \
                     or (list_of_links[i]['devicesrc'] == device_destination and
                         list_of_links[i]['devicedst'] == device_source):
                 return True
