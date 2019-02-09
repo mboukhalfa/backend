@@ -44,7 +44,6 @@ def get_containers_by_iaas(iaas_name=None):
     return containers_list
 
 
-
 def get_iaas_information(iaas_name, iaas_owner):
     iaas_information = {}
     for entry in IaaS.objects.all():
@@ -121,9 +120,10 @@ def insert_entry_iaas_consumption(iaas_name, iaas_cpu, iaas_ram, iaas_disk, iaas
 
 def iaas_resource_consumption():
     print(random.random)
-    rmq = client_broker.ClientBroker("iaas_consumption_queue")
+    queue_name = "iaas_consumption_queue"
+    rmq = client_broker.ClientBroker(queue_name)
     while True:
-        table_statistics = rmq.verify_resource_creation()
+        table_statistics = rmq.verify_resource_creation("star" + queue_name.split['_'][0])
         for i in range(len(table_statistics)):
             iaas_name = get_iaas_ip_match(str(table_statistics[i][0]))
             insert_entry_iaas_consumption(iaas_name, table_statistics[i][1], table_statistics[i][2],
@@ -157,7 +157,6 @@ def get_iaas_resources(iaas_name, resource_type, user_id):
     time_range = time_range[-20:]
 
     return time_range, values_range
-
 
 
 def get_iaas_managment_console(iaas_owner):

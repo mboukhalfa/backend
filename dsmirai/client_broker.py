@@ -7,7 +7,6 @@ import random
 import time
 
 
-
 class ClientBroker(object):
     def __init__(self, exchange_key='main_queue', ip_mngmt='195.148.125.125', user_name='mqadmin',
                  password='mqadminpassword'):
@@ -37,8 +36,6 @@ class ClientBroker(object):
         self.rat = {}
         self.magic = []
 
-
-
     def on_response(self, ch, method, props, body):
         if self.corr_id == props.correlation_id:
             print("my correlation id in the Client is: {}".format(props.correlation_id))
@@ -48,8 +45,6 @@ class ClientBroker(object):
             print(self.response)
             print(type(self.response))
             self.magic.append(self.response.decode())
-
-
 
     def management_task(self, ip, action):
         self.response = None
@@ -69,109 +64,50 @@ class ClientBroker(object):
         if ast.literal_eval(self.response.decode()) == 1:
             self.response = None
             return True
-
         return False
 
-
-    def verify_unique_name(self, container_name):
-
-
-        # preparing and sending a request to the Minions
+    def verify_resource(self, routing_key, type, ip_source="None"):
         self.response = None
         self.corr_id = str(uuid.uuid4())
         self.channel.exchange_declare(exchange=self.exchange,
                                       exchange_type='direct')
 
-        print("***********The Global Orchestrator Client Broker -- verify_unique_name --***********")
-
-        message = "unique_name#{}".format(container_name)
+        print("***********The Global Orchestrator Client Broker -- verify_resource --***********")
+        if type == "creation":
+            message = 'available_resource_creation'
+        else:
+            message = 'available_resource_migration#{}'.format(ip_source)
         print("sending ... {}".format(message))
 
         self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key='star' + self.exchange.split('_')[0],
-                                   properties=pika.BasicProperties(reply_to=self.callback_queue,
-                                                                   correlation_id=self.corr_id,),
-                                   body=str(message))
-
-
-        while self.counter < helpers.number_minions():
-            self.connection.process_data_events()
-
-        print("the main number of -- verify_unique_name --:")
-        print(helpers.number_minions())
-        print("The value of the response of -- verify_unique_name -- is: ")
-        print(self.magic)
-        self.response = None
-        self.counter = 0
-        if "True" in self.magic:
-            self.magic = []
-            print("The container already exist")
-            return True
-        self.magic = []
-        return False
-
-
-    def verify_resource_creation(self):
-        self.response = None
-        self.corr_id = str(uuid.uuid4())
-        self.channel.exchange_declare(exchange=self.exchange,
-                                      exchange_type='direct')
-
-        print("***********The Global Orchestrator Client Broker -- verify_resource_creation --***********")
-        message = 'available_resource_creation'
-        print("sending ... {}".format(message))
-
-        self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key='star' + self.exchange.split('_')[0],
+                                   routing_key=routing_key,
                                    properties=pika.BasicProperties(reply_to=self.callback_queue,
                                                                    correlation_id=self.corr_id, ),
                                    body=str(message))
 
         table_statistics = []
-        while self.counter < helpers.number_minions():
-            self.connection.process_data_events()
-        print("the main number of -- verify_resource_creation --:")
-        print(helpers.number_minions())
-        for i in range(len(self.magic)):
-            print("The value of the response of -- verify_resource_creation -- is: ")
-            print(self.magic[i].split("#"))
-            x = self.magic[i].split("#")
+        if "star" in routing_key:
+            while self.counter < helpers.number_minions():
+                self.connection.process_data_events()
+            print("the main number of -- verify_resource --:")
+            print(helpers.number_minions())
+            for i in range(len(self.magic)):
+                print("The value of the response of -- verify_resource -- is: ")
+                print(self.magic[i].split("#"))
+                x = self.magic[i].split("#")
+                table_statistics.append((x[0], int(x[1]), int(x[2]), float(x[3])))
+        else:
+            while self.response is None:
+                self.connection.process_data_events()
+            print("The value of the response of -- verify_resource_directive -- is: ")
+            print(self.magic[0].split("#"))
+            x = self.magic[0].split("#")
             table_statistics.append((x[0], int(x[1]), int(x[2]), float(x[3])))
+
         self.magic = []
-        self.response = None
         self.counter = 0
-        print("awesome end of -- verify_resource_creation --")
+        print("awesome end of -- verify_resource --")
         return table_statistics
-
-    def verify_resource_directive(self, ip_address):
-        self.response = None
-        self.corr_id = str(uuid.uuid4())
-        self.channel.exchange_declare(exchange=self.exchange,
-                                      exchange_type='direct')
-
-        print("***********The Global Orchestrator Client Broker -- verify_resource_directive --***********")
-        message = 'available_resource_directive'
-        print("sending ... {}".format(message))
-
-        self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key=ip_address,
-                                   properties=pika.BasicProperties(reply_to=self.callback_queue,
-                                                                   correlation_id=self.corr_id, ),
-                                   body=str(message))
-
-        table_statistics = []
-        while self.response is None:
-            self.connection.process_data_events()
-        print("The value of the response of -- verify_resource_directive -- is: ")
-        print(self.magic[0].split("#"))
-        x = self.magic[0].split("#")
-        table_statistics.append((x[0], int(x[1]), int(x[2]), float(x[3])))
-        self.magic = []
-        self.response = None
-        self.counter = 0
-        print("awesome end of -- verify_resource_directive --")
-        return table_statistics
-
 
     def create_container(self, container_name, client, cpu, ram, server_port_number, server_ip_address,
                          client_port_number, client_ip_address, creation_ip_address):
@@ -191,7 +127,6 @@ class ClientBroker(object):
                                                                    correlation_id=self.corr_id, ),
                                    body=str(message))
 
-
         while self.response is None:
             self.connection.process_data_events()
         print("The value of the response of -- create_container -- is {}: ".format(ast.literal_eval(
@@ -201,8 +136,7 @@ class ClientBroker(object):
         print("awesome end of -- create_container --")
         return ast.literal_eval(self.response.decode())
 
-
-    def get_container_resources(self, container_name):
+    def get_container_resources(self, container_name, ip_source):
 
         # preparing and sending a request to the Minions
         self.response = None
@@ -215,7 +149,7 @@ class ClientBroker(object):
         print("sending ... {}".format(message))
 
         self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key='star' + self.exchange.split('_')[0],
+                                   routing_key=ip_source,
                                    properties=pika.BasicProperties(
                                        reply_to=self.callback_queue,
                                        correlation_id=self.corr_id,
@@ -225,57 +159,17 @@ class ClientBroker(object):
         # Wait until the answer and execute consuming part (on_response)
         # I should add an iterative number to handle several machine
         table_statistics = []
-        while self.counter < helpers.number_minions():
+        while self.response is None:
             self.connection.process_data_events()
 
-        print("the main number of  -- get_container_resources --:")
-        print(helpers.number_minions())
-        for i in range(len(self.magic)):
+        print(self.magic[i].split("#"))
+        x = self.magic[i].split("#")
+        table_statistics.append((x[0], int(x[1]), int(x[2])))
 
-            print(self.magic[i].split("#"))
-            x = self.magic[i].split("#")
-            table_statistics.append((x[0], int(x[1]), int(x[2])))
-
-        self.response = None
         self.counter = 0
         self.magic = []
         print("awesome end of -- get_container_resources --")
         return table_statistics
-
-
-    def verify_resource_migration(self, ip_source):
-
-        self.response = None
-        self.corr_id = str(uuid.uuid4())
-        self.channel.exchange_declare(exchange=self.exchange,
-                                      exchange_type='direct')
-
-        print("***********The Global Orchestrator Client Broker -- verify_resource_migration --***********")
-        message = 'available_resource_migration#{}'.format(ip_source)
-        print("sending ... {}".format(message))
-
-        self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key='star' + self.exchange.split('_')[0],
-                                   properties=pika.BasicProperties(reply_to=self.callback_queue,
-                                                                   correlation_id=self.corr_id, ),
-                                   body=str(message))
-
-        table_statistics = []
-        while self.counter < helpers.number_minions():
-            self.connection.process_data_events()
-        print("the main number of -- verify_resource__migration --:")
-        print(helpers.number_minions())
-        for i in range(len(self.magic)):
-            print("The value of the response of -- verify_resource__migration -- is: ")
-            print(self.magic[i].split("#"))
-            x = self.magic[i].split("#")
-            table_statistics.append((x[0], int(x[1]), int(x[2]), float(x[3])))
-        self.magic = []
-        self.response = None
-        self.counter = 0
-        print("awesome end of -- verify_resource__migration --")
-        return table_statistics
-
 
     def get_container_image(self, ip_address, container_name):
         self.response = None
@@ -300,7 +194,6 @@ class ClientBroker(object):
         print("awesome end of -- get_container_image --")
         return self.response.decode()
 
-
     def part_migration_check(self, lxc_image, ip_address_destination, container_name):
         self.response = None
         self.corr_id = str(uuid.uuid4())
@@ -319,7 +212,6 @@ class ClientBroker(object):
                                    ),
                                    body=str(message))
 
-
         while self.response is None:
             self.connection.process_data_events()
         self.counter = 0
@@ -327,9 +219,7 @@ class ClientBroker(object):
         print("awesome end of -- part_migration_check --")
         return ast.literal_eval(self.response.decode())
 
-    def part_migration(self, container_name, ip_destination, num_iteration, ip_source, ovs_source, ovs_destination,
-                       client_port_number, server_port_number, vxlan_port, client_ip_address, server_ip_address,
-                       ip_sdn_controller):
+    def migration(self, container_name, ip_destination, num_iteration, ip_source):
 
         self.response = None
         self.corr_id = str(uuid.uuid4())
@@ -337,12 +227,7 @@ class ClientBroker(object):
                                       exchange_type='direct')
         print("***********The Global Orchestrator Client Broker -- part_migration --***********")
 
-        message = "part_migration#{}#{}#{}#{}#{}#{}#{}#{}#{}#{}#{}".format(container_name, ip_destination,
-                                                                           num_iteration, ovs_source,
-                                                                           ovs_destination, client_port_number,
-                                                                           server_port_number, vxlan_port,
-                                                                           client_ip_address, server_ip_address,
-                                                                           ip_sdn_controller)
+        message = "migration#{}#{}#{}".format(container_name, ip_destination, num_iteration)
         print("sending ... {}".format(message))
 
         self.channel.basic_publish(exchange=self.exchange,
@@ -358,39 +243,6 @@ class ClientBroker(object):
         self.counter = 0
         self.magic = []
         print("awesome end of -- part_migration --")
-        return ast.literal_eval(self.response.decode())
-
-
-    def full_migration(self, container_name, ip_destination, num_iteration, ip_source, ovs_source, ovs_destination,
-                       client_port_number, server_port_number, vxlan_port, client_ip_address, server_ip_address,
-                       ip_sdn_controller):
-        self.response = None
-        self.corr_id = str(uuid.uuid4())
-        self.channel.exchange_declare(exchange=self.exchange,
-                                      exchange_type='direct')
-        print("***********The Global Orchestrator Client Broker -- full_migration --***********")
-
-        message = "full_migration#{}#{}#{}#{}#{}#{}#{}#{}#{}#{}#{}".format(container_name, ip_destination,
-                                                                           num_iteration, ovs_source,
-                                                                           ovs_destination, client_port_number,
-                                                                           server_port_number, vxlan_port,
-                                                                           client_ip_address, server_ip_address,
-                                                                           ip_sdn_controller)
-        print("sending ... {}".format(message))
-
-        self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key=ip_source,
-                                   properties=pika.BasicProperties(
-                                       reply_to=self.callback_queue,
-                                       correlation_id=self.corr_id,
-                                   ),
-                                   body=str(message))
-
-        while self.response is None:
-            self.connection.process_data_events()
-        self.counter = 0
-        self.magic = []
-        print("awesome end of -- full_migration --")
         return ast.literal_eval(self.response.decode())
 
     def validate_migration(self, container_name, ip_source, ip_client):
@@ -447,12 +299,10 @@ class ClientBroker(object):
             print("The value of the response of -- rat_trigger -- is: ")
             print(self.magic[i])
             self.rat.update(ast.literal_eval(self.magic[i]))
-        self.response = None
         self.counter = 0
         self.magic = []
         print("awesome end of -- rat_trigger --")
         return self.rat
-
 
     def directive_rat_trigger(self, ip_address):
         self.response = None
@@ -477,7 +327,6 @@ class ClientBroker(object):
         print(self.magic[0])
         self.rat.update(ast.literal_eval(self.magic[0]))
         self.magic = []
-        self.response = None
         self.counter = 0
         print("awesome end of -- directive_rat_trigger --")
         return self.rat
@@ -511,13 +360,10 @@ class ClientBroker(object):
             print("The value of the response of -- sct_trigger -- is: ")
             print(self.magic[i])
             self.sct.update(ast.literal_eval(self.magic[i]))
-        self.response = None
         self.counter = 0
         self.magic = []
         print("awesome end of -- sct_trigger --")
         return self.sct
-
-
 
     def directive_sct_trigger(self, ip_address):
         self.response = None
@@ -542,11 +388,9 @@ class ClientBroker(object):
         print(self.magic[0])
         self.sct.update(ast.literal_eval(self.magic[0]))
         self.magic = []
-        self.response = None
         self.counter = 0
         print("awesome end of -- directive_sct_trigger --")
         return self.sct
-
 
     def scale_up_cpu_ram(self, container_name, creation_ip_address, cpu, ram):
         # preparing and sending a request to the Minions
@@ -562,7 +406,6 @@ class ClientBroker(object):
                                    properties=pika.BasicProperties(reply_to=self.callback_queue,
                                                                    correlation_id=self.corr_id, ),
                                    body=str(message))
-
 
         while self.response is None:
             self.connection.process_data_events()
@@ -589,7 +432,6 @@ class ClientBroker(object):
                                                                    correlation_id=self.corr_id, ),
                                    body=str(message))
 
-
         while self.response is None:
             self.connection.process_data_events()
         print("The value of the response of -- scale_up_cpu -- is {}: ".format(ast.literal_eval(
@@ -614,7 +456,6 @@ class ClientBroker(object):
                                    properties=pika.BasicProperties(reply_to=self.callback_queue,
                                                                    correlation_id=self.corr_id, ),
                                    body=str(message))
-
 
         while self.response is None:
             self.connection.process_data_events()
@@ -648,11 +489,9 @@ class ClientBroker(object):
         print(self.magic[0].split("#"))
         x = self.magic[0].split("#")
         self.magic = []
-        self.response = None
         self.counter = 0
         print("awesome end of -- container_dashboard_resources --")
         return x[0], float(x[1]), float(x[2]), float(x[3])
-
 
     def environment_cleaner(self):
         self.response = None
@@ -673,7 +512,6 @@ class ClientBroker(object):
         print(helpers.number_minions())
         print("The value of the response of -- environment_cleaner -- is: ")
         print(self.magic)
-        self.response = None
         self.counter = 0
         self.magic = []
         return True

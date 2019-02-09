@@ -50,8 +50,6 @@ class OnosHelpers:
         request_url = 'http://' + str(ip_sdn_controller) + ':8181/onos/v1/intents'
         body = self.onos_rest_connection(request_type, request_url, post_data10)
 
-
-
     def get_all_inter_ovs_links(self, ip_sdn_controller):
         request_type = 'GET'
         request_url = 'http://' + str(ip_sdn_controller) + ':8181/onos/v1/links'
@@ -60,9 +58,9 @@ class OnosHelpers:
         f = json.loads(result)
         link = f["links"]
         list_of_ports_devices = [{'portsrc': element['src']['port'], 'devicesrc': element['src']['device'],
-                         'portdst': element['dst']['port'], 'devicedst': element['dst']['device']} for element in link]
+                                  'portdst': element['dst']['port'], 'devicedst': element['dst']['device']} for element
+                                 in link]
         return list_of_ports_devices
-
 
     def get_sdn_hosts(self, ip_sdn_controller):
         request_type = 'GET'
@@ -120,8 +118,7 @@ class OnosHelpers:
             url_req = request_url + intent_list[i]
             body = self.onos_rest_connection(request_type, url_req)
 
-    def sdn_host_information(self, ip_sdn_controller, container_name):
-        ip_container = helpers.matching_ip(container_name)
+    def sdn_host_information(self, ip_sdn_controller, ip_container):
         list_of_containers = self.get_sdn_hosts(str(ip_sdn_controller))
         list_sdn_devices = self.get_sdn_devices(str(ip_sdn_controller))
         ip_vm_hosting_container = ""
@@ -136,7 +133,7 @@ class OnosHelpers:
                     if list_sdn_devices[j]['device'] == device:
                         ip_vm_hosting_container = list_sdn_devices[j]['ip_management']
                 port = list_of_containers[i]['port']
-                return device, port, ip, ip_vm_hosting_container
+                return device, port, ip_vm_hosting_container
 
     @staticmethod
     def replace_all(text, dic):
@@ -154,17 +151,15 @@ class OnosHelpers:
         for j in range(int(len(device)/3)):
             device.remove('')
 
-
         for i in range(len(device)):
             temp = device[i].split(":", 1)[1]
-            reps = {'"':'', ':':'', ' ':''}
+            reps = {'"': '', ':': '', ' ': ''}
             x = self.replace_all(temp, reps)
             if x == device1:
                 temp = device[i+1].split(":", 1)[1]
                 reps = {'"': '', ' ': ''}
-                print (self.replace_all(temp, reps))
+                print(self.replace_all(temp, reps))
                 return self.replace_all(temp, reps)
-
 
     def mac_style_ovs_name(self, device1, ip_destination):
         cmd = 'ovs-vsctl --columns=mac_in_use,name list Interface'
@@ -175,20 +170,18 @@ class OnosHelpers:
         for j in range(int(len(device)/3)):
             device.remove('')
 
-
         for i in range(len(device)):
             temp = device[i].split(":", 1)[1]
-            reps = {'"':'', ':':'', ' ':''}
+            reps = {'"': '', ':': '', ' ': ''}
             x = self.replace_all(temp, reps)
             if x == device1:
-                temp = device[i -1].split(":", 1)[1]
+                temp = device[i-1].split(":", 1)[1]
                 reps = {'"': '', ' ': ''}
                 print(self.replace_all(temp, reps))
                 mac_ovs_name = self.replace_all(temp, reps).replace(":", "")
                 mac_ovs_name = "of:0000" + mac_ovs_name
                 print(mac_ovs_name)
                 return mac_ovs_name
-
 
     def verify_links(self, ip_sdn_controller, device_source, device_destination):
         list_of_links = self.get_all_inter_ovs_links(ip_sdn_controller)

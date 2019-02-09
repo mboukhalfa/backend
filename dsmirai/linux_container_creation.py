@@ -42,10 +42,10 @@ def create(container_name, client, cpu, ram, ip_sdn_controller, container_placem
 
     if not helpers.name_control(container_name):
         print("The requested container is already in a another process")
-        id_request = helpers.insert_entry(container_name, "4", "001", client, token1, "0", "None")
+        id_request = helpers.insert_entry(container_name, "4", "001", client, "0", "None")
         return "Error"
     else:
-        id_request = helpers.insert_entry(container_name, "None", "001", client, token1, "1", "None")
+        id_request = helpers.insert_entry(container_name, "None", "001", client, "1", "None")
         if not rmq.verify_unique_name(container_name):
             print("***********The Global Orchestrator***********")
             print("didn't find any container with a similar name in the cluster")
@@ -68,7 +68,7 @@ def create(container_name, client, cpu, ram, ip_sdn_controller, container_placem
             if winner_minion[1] < int(cpu) and winner_minion[2] < int(int_ram):
                 print("***********The Global Orchestrator***********")
                 print("Resources issues")
-                while helpers.store_db_log(id_request, "3", "0", "None") != "0":
+                while helpers.store_db_log(id_request, "3", "None") != "0":
                     print("DB not yet updated")
                 return "Error"
             creation_ip_address = winner_minion[0]
@@ -107,7 +107,7 @@ def create(container_name, client, cpu, ram, ip_sdn_controller, container_placem
                     return
                 vsh.enable_remote_video_streaming(creation_ip_address, str(int(client_port_number) + 1024),
                                                   client_ip_address)
-                while helpers.store_db_log(id_request, str(result), "0", iaas_creation) != "0":
+                while helpers.store_db_log(id_request, str(result), iaas_creation) != "0":
                     print("DB not yet updated")
             return container_name
 
@@ -115,5 +115,5 @@ def create(container_name, client, cpu, ram, ip_sdn_controller, container_placem
             print("***********The Global Orchestrator***********")
             print("container already exist")
 
-            id_request = helpers.insert_entry(container_name, "2", "001", client, token1, "0", "None")
+            id_request = helpers.insert_entry(container_name, "2", "001", client, "0", "None")
             return "Error"

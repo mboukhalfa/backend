@@ -120,12 +120,10 @@ def sct_trigger():
         time.sleep(50)
 
 
-
 def api_sct_trigger(iaas_name="None"):
     rmq = client_broker.ClientBroker("sct_queue")
     trigger_type = "sct_trigger"
     ip_sdn_controller = "195.148.125.90"
-
 
     if iaas_name == "None":
         a = rmq.sct_trigger()
@@ -226,7 +224,6 @@ def api_sct_trigger(iaas_name="None"):
                     helpers.update_triggers_entry(request_id, "1")
                 while helpers.store_db_log(id_request, "1", str(iaas_name)) != "0":
                     print("DB not yet updated")
-
 
 
 def decision_sct(solver):

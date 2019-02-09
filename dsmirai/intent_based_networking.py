@@ -7,19 +7,15 @@ class IntentBasedNetworking:
     def __init__(self):
         self.onos_helpers = onos_helpers.OnosHelpers()
 
-
-
-
-
-    def initial_network_path(self, ip_sdn_controller, container_name, client):
-        client_device, client_port_number, client_ip_address, ip_vm_client = self.onos_helpers.sdn_host_information(
-            ip_sdn_controller, client)
+    def initial_network_path(self, ip_sdn_controller, server_ip_address, client_ip_address):
+        client_device, client_port_number, ip_vm_client = self.onos_helpers.sdn_host_information(
+            ip_sdn_controller, client_ip_address)
         print("the device source is: {}".format(client_device))
         print("the port number source is: {}".format(client_port_number))
         print("the ip address source is: {}".format(client_ip_address))
 
-        server_device, server_port_number, server_ip_address, ip_vm_server = self.onos_helpers.sdn_host_information(
-            ip_sdn_controller, container_name)
+        server_device, server_port_number, ip_vm_server = self.onos_helpers.sdn_host_information(
+            ip_sdn_controller, server_ip_address)
         print("the device destination is: {}".format(server_device))
         print("the port number destination is: {}".format(server_port_number))
         print("the ip address destination is: {}".format(server_ip_address))
@@ -42,7 +38,6 @@ class IntentBasedNetworking:
                 self.onos_helpers.complex_intent(str(ip_sdn_controller), client_device, middle_port_1, client_device,
                                                  client_port_number, 300, 2048, client_ip_address)
         return server_ip_address
-
 
     def network_redirection_1(self, ip_sdn_controller, client_device, mac_ovs_destination, client_port_number,
                               server_port_number, vxlan_port, client_ip_address, server_ip_address, priority):

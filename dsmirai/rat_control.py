@@ -19,7 +19,6 @@ def rat_trigger():
     trigger_type = "rat_trigger"
     ip_sdn_controller = "195.148.125.90"
 
-
     while True:
         a = rmq.rat_trigger()
         print("The returned value is {}".format(a))
@@ -97,10 +96,6 @@ def api_rat_trigger(iaas_name="None"):
                 helpers.update_triggers_entry(request_id, "2")
 
 
-
-
-
-
 def decision_rat(solver):
     ntm = {}
     i = 0
@@ -158,22 +153,4 @@ def decision_rat(solver):
 
             del solver[key]['containers'][cpu_key_max]
 
-
     return ntm
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
