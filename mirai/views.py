@@ -75,8 +75,9 @@ class ContainerViewSet(viewsets.ModelViewSet):
     """
 
     def get_queryset(self):
-        # , iaas=self.kwargs['iaas_pk'])
-        return Container.objects.filter(iaas_name__iaas_owner=self.request.user)
+        iaas=self.kwargs['iaas_pk']
+        return Container.objects.filter(iaas_name__iaas_owner=self.request.user,iaas_name=iaas)
+
     queryset = Container.objects.none()
     serializer_class = ContainerSerializer
 
