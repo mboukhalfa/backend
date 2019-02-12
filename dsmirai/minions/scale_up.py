@@ -58,7 +58,6 @@ def hard_cpu(name):
     return True
 
 
-
 def scale_down_cpu(name, cpu):
 
     # TODO: this is a trivial scale down we need something strong like the lower cpu core will be scaled down
@@ -89,8 +88,6 @@ def scale_down_cpu(name, cpu):
         temp = c.get_cgroup_item("cpuset.cpus").split("-")[1]
         c.set_cgroup_item("cpuset.cpus", "0-{}".format(int(temp) - int(cpu)))
     return True
-
-
 
 
 def scale_up_ram(name, ram):
@@ -126,7 +123,6 @@ def hard_ram(name):
                             output_file.write('\nlxc.cgroup.memory.limit_in_bytes = {}M'.format(int(int(
                                 c.get_cgroup_item("memory.limit_in_bytes"))/1024/1024)))
                             output_file.write('\n')
-
 
             basic_cmd = 'rm {}{}/config'.format(LXC_PATH, name)
             os.system(basic_cmd)

@@ -92,14 +92,8 @@ class ServerBroker(object):
         elif x[0] == "rat_trigger":
             print("***********The Host Node Server Broker -- rat_trigger --***********")
             response = rat.container_list()
-        elif x[0] == "directive_rat_trigger":
-            print("***********The Host Node Server Broker -- directive_rat_trigger --***********")
-            response = rat.container_list()
         elif x[0] == "sct_trigger":
             print("***********The Host Node Server Broker -- sct_trigger --***********")
-            response = sct.container_live_resources()
-        elif x[0] == "directive_sct_trigger":
-            print("***********The Host Node Server Broker -- directive_sct_trigger --***********")
             response = sct.container_live_resources()
         elif x[0] == "scale_up_cpu_ram":
             print("***********The Host Node Server Broker -- scale_up_cpu_ram --***********")

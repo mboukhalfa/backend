@@ -4,9 +4,7 @@ from dsmirai.persistent_model import dashboard_helper
 import time
 
 
-
 def iaas_discovery():
-    #helpers.initialize_iaas_table()
 
     while True:
         ping_count = 4

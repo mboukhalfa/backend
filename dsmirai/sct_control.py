@@ -19,110 +19,11 @@ ip_sdn_controller = "195.148.125.90"
 trigger_type = "rat_trigger"
 
 
-def sct_trigger():
+# TODO: all trigger.lxc_migration.delay need to be re-verified
+# to use rat_trigger as a daemon put it into an infinite loop containing a sleep operation
+def sct_trigger(iaas_name="None"):
+    # iaas_name="None" == start the trigger in all the nodes
     rmq = client_broker.ClientBroker(queue_name)
-    while True:
-
-        a = rmq.sct_trigger("star" + queue_name.split('_')[0])
-        print("The returned value is {}".format(a))
-        ntm = decision_sct(a)
-        print("the type of the ntm is:")
-        print(type(ntm))
-        print(ntm)
-        for key, value in ntm.items():
-            if not helpers.name_control(value['container']):
-                print("container {} is in another action waiting for it to finish".format(value['container']))
-            else:
-                print("the sct_trigger is activated")
-                iaas = helpers.match_containers_iaas(value['container'])
-                id_request = helpers.insert_entry(value['container'], "None", "003", "SCT", "1",
-                                                  str(iaas))
-                if 'node_to_migrate_CPU_RAM' in key:
-
-                    request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
-                                                               "migrate_cpu_ram", datetime.datetime.now(), "0")
-                    print("migrate both of the cpu and the ram")
-                    if not rmq.scale_up_cpu_ram(value['container'], value['VM_ip'], value['cpu'], value['ram']):
-                        print("Unable to migrate both of the cpu and the ram")
-                        helpers.update_triggers_entry(request_id, "2")
-                    else:
-                        while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
-                            print("DB not yet updated")
-                        if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
-                                value['container']:
-                            helpers.update_triggers_entry(request_id, "1")
-                        else:
-                            helpers.update_triggers_entry(request_id, "2")
-                elif 'node_to_migrate_CPU' in key:
-                    request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
-                                                               "migrate_cpu", datetime.datetime.now(), "0")
-                    print("migrate the cpu")
-                    if not rmq.scale_up_cpu(value['container'], value['VM_ip'], value['cpu']):
-                        print("Unable to migrate the cpu")
-                        helpers.update_triggers_entry(request_id, "2")
-                    else:
-                        while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
-                            print("DB not yet updated")
-                        if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
-                                value['container']:
-                            helpers.update_triggers_entry(request_id, "1")
-                        else:
-                            helpers.update_triggers_entry(request_id, "2")
-                elif 'node_to_migrate_RAM' in key:
-                    request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
-                                                               "migrate_ram", datetime.datetime.now(), "0")
-                    print("migrate the ram")
-                    if not rmq.scale_up_ram(value['container'], value['VM_ip'], value['ram']):
-                        print("Unable to migrate the ram")
-                        helpers.update_triggers_entry(request_id, "2")
-                    else:
-                        while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
-                            print("DB not yet updated")
-                        if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
-                                value['container']:
-                            helpers.update_triggers_entry(request_id, "1")
-                        else:
-                            helpers.update_triggers_entry(request_id, "2")
-                elif 'node_to_scaleUp_CPU_RAM' in key:
-                    request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
-                                                               "create_cpu_ram", datetime.datetime.now(), "0")
-                    print("scale up both of the cpu and the ram")
-                    if not rmq.scale_up_cpu_ram(value['container'], value['VM_ip'], value['cpu'], value['ram']):
-                        print("Unable to scale up both of the cpu and the ram")
-                        helpers.update_triggers_entry(request_id, "2")
-                    else:
-                        helpers.update_triggers_entry(request_id, "1")
-                    while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
-                        print("DB not yet updated")
-                elif 'node_to_scaleUp_CPU' in key:
-                    request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
-                                                               "scale_cpu", datetime.datetime.now(), "0")
-                    print("scale up the cpu")
-                    if not rmq.scale_up_cpu(value['container'], value['VM_ip'], value['cpu']):
-                        print("Unable to scale ip the cpu")
-                        helpers.update_triggers_entry(request_id, "2")
-                    else:
-                        helpers.update_triggers_entry(request_id, "1")
-                    while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
-                        print("DB not yet updated")
-                elif 'node_to_scaleUp_RAM' in key:
-                    request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
-                                                               "scale_ram", datetime.datetime.now(), "0")
-                    print("scale up the ram")
-                    if not rmq.scale_up_ram(value['container'], value['VM_ip'], value['ram']):
-                        print("Unable to scale ip the ram")
-                        helpers.update_triggers_entry(request_id, "2")
-                    else:
-                        helpers.update_triggers_entry(request_id, "1")
-                    while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
-                        print("DB not yet updated")
-
-        time.sleep(50)
-
-
-def api_sct_trigger(iaas_name="None"):
-    rmq = client_broker.ClientBroker(queue_name)
-
     if iaas_name == "None":
         a = rmq.sct_trigger("star" + queue_name.split('_')[0])
     else:
@@ -148,7 +49,7 @@ def api_sct_trigger(iaas_name="None"):
                 request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
                                                            "migrate_cpu_ram", datetime.datetime.now(), "0")
                 print("migrate both of the cpu and the ram")
-                if not rmq.scale_up_cpu_ram(value['container'], value['VM_ip'], value['cpu'], value['ram']):
+                if not rmq.scale_up(value['container'], value['VM_ip'], "scale_up_cpu_ram", value['cpu'], value['ram']):
                     print("Unable to migrate both of the cpu and the ram")
                     helpers.update_triggers_entry(request_id, "2")
                 else:
@@ -163,7 +64,7 @@ def api_sct_trigger(iaas_name="None"):
                 request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
                                                            "migrate_cpu", datetime.datetime.now(), "0")
                 print("migrate the cpu")
-                if not rmq.scale_up_cpu(value['container'], value['VM_ip'], value['cpu']):
+                if not rmq.scale_up(value['container'], value['VM_ip'], "scale_up_cpu", value['cpu'], 0):
                     print("Unable to migrate the cpu")
                     helpers.update_triggers_entry(request_id, "2")
                 else:
@@ -178,7 +79,7 @@ def api_sct_trigger(iaas_name="None"):
                 request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
                                                            "migrate_ram", datetime.datetime.now(), "0")
                 print("migrate the ram")
-                if not rmq.scale_up_ram(value['container'], value['VM_ip'], value['ram']):
+                if not rmq.scale_up(value['container'], value['VM_ip'], "scale_up_ram", value['ram'], 0):
                     print("Unable to migrate the ram")
                     helpers.update_triggers_entry(request_id, "2")
                 else:
@@ -193,7 +94,8 @@ def api_sct_trigger(iaas_name="None"):
                 request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
                                                            "create_cpu_ram", datetime.datetime.now(), "0")
                 print("scale up both of the cpu and the ram")
-                if not rmq.scale_up_cpu_ram(value['container'], value['VM_ip'], value['cpu'], value['ram']):
+                if not rmq.scale_up(value['container'], value['VM_ip'], "scale_up_cpu_ram", value['cpu'],
+                                    value['ram']):
                     print("Unable to scale up both of the cpu and the ram")
                     helpers.update_triggers_entry(request_id, "2")
                 else:
@@ -204,7 +106,7 @@ def api_sct_trigger(iaas_name="None"):
                 request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
                                                            "scale_cpu", datetime.datetime.now(), "0")
                 print("scale up the cpu")
-                if not rmq.scale_up_cpu(value['container'], value['VM_ip'], value['cpu']):
+                if not rmq.scale_up(value['container'], value['VM_ip'], "scale_up_cpu", value['cpu'], 0):
                     print("Unable to scale ip the cpu")
                     helpers.update_triggers_entry(request_id, "2")
                 else:
@@ -215,7 +117,7 @@ def api_sct_trigger(iaas_name="None"):
                 request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
                                                            "scale_ram", datetime.datetime.now(), "0")
                 print("scale up the ram")
-                if not rmq.scale_up_ram(value['container'], value['VM_ip'], value['ram']):
+                if not rmq.scale_up(value['container'], value['VM_ip'], "scale_up_ram", value['ram'], 0):
                     print("Unable to scale ip the ram")
                     helpers.update_triggers_entry(request_id, "2")
                 else:
@@ -234,7 +136,7 @@ def decision_sct(solver):
         if bool(solver[key]['containers']):
             for kk, vv in solver[key]['containers'].items():
 
-                # Implementing semaphore logic both the memory and the cpu or nothing
+                # Implementing semaphore, logic both the memory and the cpu or nothing
                 if vv['live_ram'] > vv['ram'] * ram_threshold:
                     if value['vm_ram'] > 1024:
                         if vv['cpu'] * (vv['live_cpu']) > vv['cpu'] * cpu_threshold:

@@ -74,7 +74,6 @@ def default_bridge():
     subprocess.check_output(basi_cmd, shell=True)
 
 
-
 def resource_availability():
 
     nb_container = lxc_driver.list_containers()
@@ -84,6 +83,7 @@ def resource_availability():
     vm_disk = get_vm_disk()
 
     for i in range(len(nb_container)):
+        # TODO: later to be changed by a list that contains all the VNFs present in the node
         if nb_container[i] != 'nginxBKserver' and nb_container[i] != 'nginxBKclient':
             cpu = lxc_driver.get_cpu(nb_container[i])
             ram = lxc_driver.get_mem(nb_container[i])
@@ -93,31 +93,3 @@ def resource_availability():
             vm_disk = float(vm_disk) - float(disk)
 
     return vm_cpu, vm_ram, vm_disk
-
-
-
-def ssh_query(cmd, ip_destination, output=False, user_name='root', password='iprotect'):
-
-    """
-    in order to run a ssh command easier
-    :param cmd:
-    :param ip_destination:
-    :param user_name:
-    :param password:
-    :param output:
-    """
-
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(str(ip_destination), username=user_name, password=password)
-    if output:
-        try:
-            stdin, stdout, stderr = ssh.exec_command(cmd)
-            return stdin, stdout, stderr
-        except subprocess.CalledProcessError:
-            out = False
-            return out
-    if int(ssh.exec_command(cmd)) == 0:
-        return True
-    else:
-        return False

@@ -17,45 +17,10 @@ ip_sdn_controller = "195.148.125.90"
 trigger_type = "rat_trigger"
 
 
-def rat_trigger():
-    rmq = client_broker.ClientBroker(queue_name)
-    while True:
-        a = rmq.rat_trigger("star" + queue_name.split('_')[0])
-        print("The returned value is {}".format(a))
-        ntm = decision_rat(a)
-
-        print(type(ntm))
-        print(ntm)
-        for key, value in ntm.items():
-
-            if not helpers.name_control(value['container']):
-                print("***************************************************************************************")
-                print("***************************************************************************************")
-                print("container {} is in another action waiting for it to finish".format(value['container']))
-                print("***************************************************************************************")
-                print("***************************************************************************************")
-
-            else:
-                print("the rat_trigger is activated")
-                iaas = helpers.match_containers_iaas(value['container'])
-                id_request = helpers.insert_entry(value['container'], "None", "003", "RAT", "1",
-                                                  str(iaas))
-                request_id = helpers.insert_entry_triggers(value['container'], value['VM_ip'], trigger_type,
-                                                           "migrate_rat", datetime.datetime.now(), "0")
-                print("migrate the container {} localized in {}".format(value['container'], value['VM_ip']))
-                while helpers.store_db_log(id_request, "1", str(iaas)) != "0":
-                    print("DB not yet updated")
-                if trigger.lxc_migration.delay(value['container'], 3, str(uuid.uuid4()), ip_sdn_controller) == \
-                        value['container']:
-                    helpers.update_triggers_entry(request_id, "1")
-                else:
-                    helpers.update_triggers_entry(request_id, "2")
-
-        time.sleep(50)
-
-
-def api_rat_trigger(iaas_name="None"):
-
+# TODO: all trigger.lxc_migration.delay need to be re-verified
+# to use rat_trigger as a daemon put it into an infinite loop containing a sleep operation
+def rat_trigger(iaas_name="None"):
+    # iaas_name="None" == start the trigger in all the nodes
     rmq = client_broker.ClientBroker(queue_name)
     if iaas_name == "None":
         a = rmq.rat_trigger("star" + queue_name.split('_')[0])

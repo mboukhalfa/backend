@@ -1,7 +1,7 @@
 import subprocess
 import os
 import time
-import virtual_machine as system_driver
+import utils as system_driver
 import linux_container as lxc_driver
 import logging
 
@@ -139,7 +139,7 @@ def live_memory_copy(container_name, num_iteration, ip_destination):
         for i in range(1, int(num_iteration)):
             print("iteration :{}".format(i))
             print(str(int(num_iteration) - 1))
-            checkpoint_folder ='{}{}/checkpoint/{}'.format(LXC_PATH, container_name, i)
+            checkpoint_folder = '{}{}/checkpoint/{}'.format(LXC_PATH, container_name, i)
             mkdir_cmd = 'mkdir ' + checkpoint_folder
             result = subprocess.check_output(mkdir_cmd, shell=True)
             if i == 1:
@@ -154,7 +154,7 @@ def live_memory_copy(container_name, num_iteration, ip_destination):
 
             criu_cmd = 'criu ' + action + ' -D ' + checkpoint_folder + ' -o ' + checkpoint_folder + '/' + action + \
                        '.log ' + get_general_arguments(container_name) + ' ' + args
-            print (criu_cmd)
+            print(criu_cmd)
             result1 = subprocess.check_output(criu_cmd, shell=True)
             print("rsync of the {} iteration ..".format(i))
 

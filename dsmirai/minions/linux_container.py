@@ -79,9 +79,9 @@ def get_size(container_name):
                 return int(res[0])
             elif my_info[0][i - 1] == 'G':
                 res = my_info[0].split('G')
-                firstNumber = float(res[0])
-                secondNumber = float(1000.0)
-                answer = (firstNumber * secondNumber)
+                first_number = float(res[0])
+                second_number = float(1000.0)
+                answer = (first_number * second_number)
                 return answer
     except Exception as exception:
         my_logger.critical('ERROR: get_size():' + str(exception) + '\n')
@@ -95,28 +95,6 @@ def get_live_cpu(container_name):
         cpu_usage = float(f.readline())
     print(cpu_usage)
     return cpu_usage
-
-
-def get_live_cpu_container():
-    j = 0
-    cpu_table = []
-    while j < 2:
-        cmd = "sed -n 's/^cpu\s//p' /proc/stat"
-        answer = subprocess.check_output(cmd, shell=True)
-        answer = answer.decode().split(' ')
-        answer = answer[1:-1]
-        cpu_table.append(int(answer[0].encode('ascii', 'ignore')))
-        cpu_table.append(int(answer[2].encode('ascii', 'ignore')))
-        cpu_table.append(int(answer[3].encode('ascii', 'ignore')))
-        j += 1
-        time.sleep(1)
-    cpu_percentage = 100 * (cpu_table[3] - cpu_table[0] + cpu_table[4] - cpu_table[1]) / (cpu_table[3] - cpu_table[0] +
-                                                                                          cpu_table[4] - cpu_table[1] +
-                                                                                          cpu_table[5] - cpu_table[2])
-    with open('/root/cpu', "w") as my_file:
-        my_file.write(str(cpu_percentage))
-        my_file.close()
-    return cpu_percentage
 
 
 # Get the live Memory consumption
@@ -182,7 +160,6 @@ def get_container_resources(container_name):
         print("unable to get container resources from our linux container")
 
 
-
 def start_container(container_name):
     try:
         c = lxc.Container(container_name)
@@ -208,13 +185,11 @@ def get_ip_container(container_name):
         print("unable to get container ip address from our linux container")
 
 
-
 def container_attach(container_name, command):
     c = lxc.Container(container_name)
     if not c.defined:
         return False
     return c.attach_wait(lxc.attach_run_command, command)
-
 
 
 def container_pid(container_name):

@@ -350,14 +350,14 @@ class ClientBroker(object):
         print("awesome end of -- sct_trigger --")
         return self.sct
 
-    def scale_up_cpu_ram(self, container_name, creation_ip_address, cpu, ram):
+    def scale_up(self, container_name, creation_ip_address, type_scale_up, cpu, ram):
         # preparing and sending a request to the Minions
         self.response = None
         self.corr_id = str(uuid.uuid4())
         self.channel.exchange_declare(exchange=self.exchange,
                                       exchange_type='direct')
-        print("***********The Global Orchestrator Client Broker -- scale_up_cpu_ram --***********")
-        message = "scale_up_cpu_ram#{}#{}#{}".format(container_name, cpu, ram)
+        print("***********The Global Orchestrator Client Broker -- scale_up --***********")
+        message = "{}#{}#{}#{}".format(type_scale_up, container_name, cpu, ram)
         print("sending ... {}".format(message))
         self.channel.basic_publish(exchange=self.exchange,
                                    routing_key=creation_ip_address,
@@ -368,61 +368,11 @@ class ClientBroker(object):
         while self.response is None:
             self.connection.process_data_events()
 
-        print("The value of the response of -- scale_up_cpu_ram -- is {}: ".format(ast.literal_eval(
+        print("The value of the response of -- scale_up -- is {}: ".format(ast.literal_eval(
             self.response.decode())))
         self.counter = 0
         self.magic = []
-        print("awesome end of -- scale_up_cpu_ram --")
-        return ast.literal_eval(self.response.decode())
-
-    def scale_up_cpu(self, container_name, creation_ip_address, cpu):
-        # preparing and sending a request to the Minions
-        self.response = None
-        self.corr_id = str(uuid.uuid4())
-        self.channel.exchange_declare(exchange=self.exchange,
-                                      exchange_type='direct')
-        print("***********The Global Orchestrator Client Broker -- scale_up_cpu --***********")
-        message = "scale_up_cpu#{}#{}".format(container_name, cpu)
-        print("sending ... {}".format(message))
-        self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key=creation_ip_address,
-                                   properties=pika.BasicProperties(reply_to=self.callback_queue,
-                                                                   correlation_id=self.corr_id, ),
-                                   body=str(message))
-
-        while self.response is None:
-            self.connection.process_data_events()
-        print("The value of the response of -- scale_up_cpu -- is {}: ".format(ast.literal_eval(
-            self.response.decode())))
-        self.counter = 0
-        self.magic = []
-
-        print("awesome end of -- scale_up_cpu --")
-        return ast.literal_eval(self.response.decode())
-
-    def scale_up_ram(self, container_name, creation_ip_address, ram):
-        # preparing and sending a request to the Minions
-        self.response = None
-        self.corr_id = str(uuid.uuid4())
-        self.channel.exchange_declare(exchange=self.exchange,
-                                      exchange_type='direct')
-        print("***********The Global Orchestrator Client Broker -- scale_up_ram --***********")
-        message = "scale_up_ram#{}#{}".format(container_name, ram)
-        print("sending ... {}".format(message))
-        self.channel.basic_publish(exchange=self.exchange,
-                                   routing_key=creation_ip_address,
-                                   properties=pika.BasicProperties(reply_to=self.callback_queue,
-                                                                   correlation_id=self.corr_id, ),
-                                   body=str(message))
-
-        while self.response is None:
-            self.connection.process_data_events()
-
-        print("The value of the response of -- scale_up_ram -- is {}: ".format(ast.literal_eval(
-            self.response.decode())))
-        self.counter = 0
-        self.magic = []
-        print("awesome end of -- scale_up_ram --")
+        print("awesome end of -- scale_up --")
         return ast.literal_eval(self.response.decode())
 
     def container_dashboard_resources(self, container_name, ip_address):
