@@ -7,7 +7,6 @@ from dsmirai import linux_container_creation
 from dsmirai import linux_container_migration
 from dsmirai import onos_cleaner
 
-
 @app.task
 def iaas_daemon():
     iaas_deamon.iaas_discovery()
@@ -39,6 +38,23 @@ def api_sct(iaas_name="None"):
 
 
 @app.task
+def iaas_registration(name, ip, owner):
+    iaas_deamon.iaas_registration(name, ip, owner)
+    return
+
+
+@app.task
+def iaas_deletion(ip):
+    iaas_deamon.iaas_deletion(ip)
+    return
+
+
+@app.task
+def iaas_soft_deletion(id):
+    iaas_deamon.iaas_soft_delete(id)
+    return
+
+@app.task
 def iaas_consumption():
     dashboard_helper.iaas_resource_consumption()
     return
@@ -48,6 +64,12 @@ def iaas_consumption():
 def clean_onos_env():
     onos_cleaner.clean_onos()
     return
+
+
+@app.task
+def lxc_creation(container_name, client, cpu, ram, token, ip_sdn_controller, container_placement, application_type):
+    return linux_container_creation.create(container_name, client, cpu, ram, token, ip_sdn_controller,
+                                           container_placement, application_type)
 
 
 @app.task

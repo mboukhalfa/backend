@@ -6,5 +6,5 @@ def lxc_creation():
     return linux_container_creation.create()
 
 @app.task
-def lxc_migration(container, num_iteration, iaas):
+def lxc_migration(container, iaas):
     return linux_container_migration.migrate(container, int(num_iteration), iaas)

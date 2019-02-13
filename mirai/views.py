@@ -76,7 +76,7 @@ class ContainerViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         iaas=self.kwargs['iaas_pk']
-        return Container.objects.filter(iaas_name__iaas_owner=self.request.user,iaas_name=iaas)
+        return Container.objects.filter(iaas__iaas_owner=self.request.user,iaas=iaas)
 
     queryset = Container.objects.none()
     serializer_class = ContainerSerializer
@@ -90,7 +90,8 @@ class Migrate(APIView):
         pass
     def valid_container():
         pass
+
     def get(self, request, container, to_iaas, format=None):
-        # tasks.lxc_migration.delay(container['name'], 3, str(uuid.uuid4()), ip_sdn_controller, container['target_cloud'])
+        tasks.lxc_migration.delay(container, to_iaas)
         return Response({"container": container, "to_iaas": to_iaas})
 

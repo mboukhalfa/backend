@@ -16,8 +16,7 @@ Code communication: create = 001
 """
 
 
-def create(container_name, client, cpu, ram, ip_sdn_controller, container_placement="None",
-           application_type="video"):
+def create(container_id):
     """
     :param container_name:
     :param client:

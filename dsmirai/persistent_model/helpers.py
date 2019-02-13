@@ -1,5 +1,4 @@
 from mirai.models import Log
-from mirai.models import IpsPorts
 from mirai.models import Triggers
 from mirai.models import IaaS
 import datetime

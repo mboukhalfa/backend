@@ -7,7 +7,7 @@ class IaaS(models.Model):
         (0, 'off'),
         (1, 'on'),)
 
-    iaas_name = models.TextField(unique=True, max_length=120)
+    iaas = models.TextField(unique=True, max_length=120)
     iaas_ip = models.GenericIPAddressField(unique=True)
     iaas_state = models.IntegerField(null=True, choices=IAAS_STATE_CHOICES)
     iaas_configuration = models.TextField(
@@ -19,7 +19,8 @@ class IaaS(models.Model):
 
 
 class IaaSConsumption(models.Model):
-    iaas_name = models.ForeignKey(IaaS, related_name='consumptions', on_delete=models.CASCADE)
+    iaas = models.ForeignKey(
+        IaaS, related_name='consumptions', on_delete=models.CASCADE)
     iaas_ram = models.IntegerField()
     iaas_disk = models.FloatField()
     iaas_cpu = models.IntegerField()
@@ -30,12 +31,18 @@ class IaaSConsumption(models.Model):
 
 
 class Container(models.Model):
-    iaas_name = models.ForeignKey(IaaS, on_delete=models.CASCADE)
+    iaas = models.ForeignKey(IaaS, on_delete=models.CASCADE, null=True)
     container_name = models.TextField(max_length=120)
+    cpu = models.TextField(max_length=120, default="1")
+    ram = models.TextField(max_length=120, default="512M")
+    application_type = models.TextField(max_length=120, default="video")
+    ip_address = models.TextField(max_length=120)
+    port = models.IntegerField()
 
 
-class IpsPorts(models.Model):
+class Client(models.Model):
     container = models.ForeignKey(Container, on_delete=models.CASCADE)
+    container_name = models.TextField(max_length=120)
     ip_address = models.TextField(max_length=120)
     port = models.IntegerField()
 
@@ -55,19 +62,11 @@ class Triggers(models.Model):
     trigger_result = models.TextField(max_length=120, null=True)
 
 
-
 class Log(models.Model):
-    server_name = models.TextField(max_length=120)
+    container = models.ForeignKey(Container, on_delete=models.CASCADE)
     result = models.TextField(max_length=50)
     code = models.TextField(max_length=120)
-    client_name = models.TextField(max_length=120)
     usage = models.TextField(max_length=120)
-    iaas = models.TextField(max_length=120, default="None")
-    cpu = models.TextField(max_length=120, default="1")
-    ram = models.TextField(max_length=120, default="512M")
-    application_type = models.TextField(max_length=120, default="video")
 
     def __str__(self):
-        return "server_name: {} result: {} code: {} client_name: {} usage: {} iaas: {} cpu: {} ram: {} " \
-               "application_type: {}".format(self.server_name, self.result, self.code, self.client_name,
-                                             self.usage, self.iaas, self.cpu, self.ram, self.application_type)
+        return "container: {} result: {} code: {}  usage: {} ".format(self.container, self.result, self.code, self.usage)
