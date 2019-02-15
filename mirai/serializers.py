@@ -16,7 +16,7 @@ class IaasResourceConsumptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IaaSConsumption
-        fields = ('__all__')
+        fields = '__all__'
 
 
 class IaaSSerializer(serializers.ModelSerializer):
@@ -24,17 +24,17 @@ class IaaSSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IaaS
-        fields = ('__all__')
+        fields = '__all__'
         read_only_fields = ('iaas_state',
-                    'iaas_configuration',
-                    'iaas_date_discovery',
-                    'iaas_date_configuration')
-        
+                            'iaas_configuration',
+                            'iaas_date_discovery',
+                            'iaas_date_configuration')
 
 
 class ContainerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Container
-        fields = ('__all__')
-        read_only_fields = ('ip_address','port',)
+        fields = '__all__'
+        read_only_fields = ('ip_address',
+                            'port')

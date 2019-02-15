@@ -5,6 +5,9 @@ from operator import itemgetter
 from dsmirai.persistent_model import helpers
 from dsmirai.persistent_model import dashboard_helper
 import dsmirai.video_streaming_handler as vsh
+from django.conf import settings
+from mirai.models import IaaS
+
 
 """
 Code communication: create = 001
@@ -16,39 +19,46 @@ Code communication: create = 001
 """
 
 
+
 def create(container_id):
     """
-    :param container_name:
-    :param client:
-    :param cpu:
-    :param ram:
-    :param ip_sdn_controller:
-    :param container_placement:
-    :param application_type:
+    :param container_id:
     :return:
     """
     queue_name = "creation_queue"
     rmq = client_broker.ClientBroker(queue_name)
     intents = intent_based_networking.IntentBasedNetworking()
     print("***********The Global Orchestrator***********")
+    print("the container_id: {}".format(container_id))
+    # TODO: insert in LOG table based on the container_id
+    container_name, ram, cpu, container_placement, application_type, server_ip_address, server_port_number = \
+        helpers.add_entry_ip_ports(container_id)
+    id_request = helpers.insert_entry(container_name, "None", "001", "1")
+    client, client_ip_address, client_port_number = helpers.insert_entry_client(container_name)
+
     print("the server: {}".format(container_name))
     print("the client: {}".format(client))
     print("cpu: {}".format(cpu))
     print("ram: {}".format(ram))
-    print("placement: {}".format(container_placement))
+    print("placement id: {}".format(container_placement))
+    print("application_type: {}".format(application_type))
+    print("the port number for the server is: {}".format(server_port_number))
+    print("the ip address for the server is: {}".format(server_ip_address))
+    print("the port number for the client is: {}".format(client_port_number))
+    print("the ip address for the client is: {}".format(client_ip_address))
 
-    id_request = helpers.insert_entry(container_name, "None", "001", client, "1", "None")
     print("***********The Global Orchestrator***********")
-    if container_placement == "None":
+    if container_placement is None:
         print("smart creation of containers")
         table_statistics = rmq.verify_resource("star" + queue_name.split('_')[0], "creation")
     else:
         # TODO: I suggest here to do the control of it's the cloud exist or not in the front end part
         print("directive creation of containers")
-        ip_address = helpers.match_iaas_name_ip(container_placement)
-        if ip_address == "Error":
+        ip_address = IaaS.objects.filter(pk=container_placement).iaas_ip
+        if ip_address is None:
             print("unknown cloud name !!!")
             return
+        print("the ip address of the IAAS is: {}".format(ip_address))
         table_statistics = rmq.verify_resource(ip_address, "creation")
     print(table_statistics)
     print(type(table_statistics))
@@ -60,7 +70,7 @@ def create(container_id):
     if winner_minion[1] < int(cpu) and winner_minion[2] < int(int_ram):
         print("***********The Global Orchestrator***********")
         print("Resources issues")
-        while helpers.store_db_log(id_request, "3", "None") != "0":
+        while helpers.store_db_log(id_request, "3") != "0":
             print("DB not yet updated")
         return "Error"
     creation_ip_address = winner_minion[0]
@@ -72,14 +82,6 @@ def create(container_id):
         # TODO: to be implemented later when adding new VNFs
         pass
     else:
-        server_port_number, server_ip_address = helpers.add_entry_ip_ports(container_name)
-        print("the port number for the server is: {}".format(server_port_number))
-        print("the ip address for the server is: {}".format(server_ip_address))
-
-        client_port_number, client_ip_address = helpers.add_entry_ip_ports(client)
-        print("the port number for the client is: {}".format(client_port_number))
-        print("the ip address for the client is: {}".format(client_ip_address))
-
         print("start the creation itself ....")
         result = 0
         if rmq.management_task(creation_ip_address, "creation"):
@@ -88,11 +90,12 @@ def create(container_id):
                                           server_ip_address, client_port_number, client_ip_address,
                                           creation_ip_address)
 
-        if container_placement == "None":
-            container_placement = dashboard_helper.get_iaas_ip_match(str(creation_ip_address))
-            print("the iaas for the creation is: {}".format(container_placement))
+        if container_placement is None:
+            container_placement = IaaS.objects.filter(iaas_ip=creation_ip_address).id
+            helpers.tracking_iaas_container(container_id, container_placement)
+            print("the id of iaas for the creation is: {}".format(container_placement))
 
-        intents.initial_network_path(ip_sdn_controller, server_ip_address, client_ip_address)
+        intents.initial_network_path(settings.IP_SDN_CONTROLLER, server_ip_address, client_ip_address)
         print("***********The Global Orchestrator***********")
         print("the result is: {}".format(result))
         if result != 1:
@@ -100,7 +103,7 @@ def create(container_id):
             return
         vsh.enable_remote_video_streaming(creation_ip_address, str(int(client_port_number) + 1024),
                                           client_ip_address)
-        while helpers.store_db_log(id_request, str(result), container_placement) != "0":
+        while helpers.store_db_log(id_request, str(result)) != "0":
             print("DB not yet updated")
     return container_name
 

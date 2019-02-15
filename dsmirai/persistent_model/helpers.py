@@ -1,6 +1,8 @@
 from mirai.models import Log
 from mirai.models import Triggers
 from mirai.models import IaaS
+from mirai.models import Container
+from mirai.models import Client
 import datetime
 import random
 from netaddr import IPNetwork
@@ -17,17 +19,33 @@ def get_ip_port_sdn_network():
         ip_list = ip_list[2:-1]
         random.shuffle(ip_list)
         ip_address = random.choice(ip_list).format()
-        if IpsPorts.objects.filter(ip_address=ip_address).count() == 0:
+        if Container.objects.filter(ip_address=ip_address).count() == 0:
             ip_iteration = 1
     return ip_address, ip_address.split(".")[3]
 
 
-def store_db_log(id, result, iaas):
+def add_entry_ip_ports(container_id):
+    ip_address, port_number = get_ip_port_sdn_network()
+    process = Container.objects.get(pk=container_id)
+    process.ip_address = ip_address
+    process.port = port_number
+    process.save()
+    return process.container_name, process.ram, process.cpu, process.iaas, process.application_type, process.ip_address\
+        , process.port
+
+
+def store_db_log(id, result):
     process = Log.objects.get(pk=id)
     process.result = result
-    process.iaas = iaas
     process.save()
     return process.usage
+
+
+def tracking_iaas_container(container_id, iaas):
+    process = Log.objects.get(pk=container_id)
+    process.iaas = iaas
+    process.save()
+    return process.iaas
 
 
 def name_control(container_name):
@@ -35,14 +53,6 @@ def name_control(container_name):
         if entry.server_name == container_name and entry.usage == "1":
             return False
     return True
-
-
-def add_entry_ip_ports(container_name):
-    ip_address, port_number = get_ip_port_sdn_network()
-    x = IpsPorts(ip_address=str(ip_address), container_name=str(
-        container_name), port=int(port_number))
-    x.save()
-    return port_number, ip_address
 
 
 def add_vxlan_ip_ports(container_name):
@@ -53,9 +63,16 @@ def add_vxlan_ip_ports(container_name):
     return port_number
 
 
-def insert_entry(container_name, result, code, new_container_name, usage, iaas):
-    x = Log(server_name=container_name, result=result, code=code, client_name=new_container_name,
-            usage=usage, iaas=iaas)
+def insert_entry_client(container_name):
+    ip_address, port_number = get_ip_port_sdn_network()
+    x = Client(container=container_name, container_name=container_name + "-client", ip_address=ip_address,
+               port=port_number)
+    x.save()
+    return x.container_name, x.ip_address, x.port
+
+
+def insert_entry(container_name, result, code, usage):
+    x = Log(container=container_name, result=result, code=code, usage=usage)
     x.save()
     return x.pk
 
