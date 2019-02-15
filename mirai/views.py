@@ -69,6 +69,7 @@ class IaasViewSet(viewsets.ModelViewSet):
         serializer.save(iaas_owner=self.request.user)
 
 
+
 class ContainerViewSet(viewsets.ModelViewSet):
     """
     CRUD Container
@@ -81,6 +82,10 @@ class ContainerViewSet(viewsets.ModelViewSet):
     queryset = Container.objects.none()
     serializer_class = ContainerSerializer
 
+    def perform_create(self, serializer):
+        container = serializer.save()
+        tasks.lxc_creation.delay(container.id)
+
 
 class Migrate(APIView):
     """
@@ -91,7 +96,7 @@ class Migrate(APIView):
     def valid_container():
         pass
 
-    def get(self, request, container, to_iaas, format=None):
-        tasks.lxc_migration.delay(container, to_iaas)
-        return Response({"container": container, "to_iaas": to_iaas})
+    def get(self, request, container_id, to_iaas_id, format=None):
+        tasks.lxc_migration.delay(container_id, to_iaas_id)
+        return Response({"container": container_id, "to_iaas": to_iaas_id})
 

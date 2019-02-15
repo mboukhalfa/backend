@@ -32,13 +32,3 @@ class ContainerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Container
         fields = ('__all__')
-
-    def create(self, validated_data):
-        print(self.context['request'])
-        print(validated_data)
-        uid = str(uuid.uuid4())
-        print(uid)
-        tasks.lxc_creation.delay()
-        
-        
-        return Container.objects.create(**validated_data)
