@@ -1,8 +1,0 @@
-{
-    "workbench.colorCustomizations": {
-        "activityBar.background": "#120131",
-        "titleBar.activeBackground": "#120131",
-        "titleBar.activeForeground": "#FEFBFC"
-    },
-    "python.pythonPath": "/home/bmm/.local/share/virtualenvs/backend_2-2PAskrSm/bin/python"
-}
