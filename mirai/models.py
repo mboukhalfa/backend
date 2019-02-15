@@ -7,7 +7,7 @@ class IaaS(models.Model):
         (0, 'off'),
         (1, 'on'),)
 
-    iaas = models.TextField(unique=True, max_length=120)
+    iaas_name = models.TextField(unique=True, max_length=120)
     iaas_ip = models.GenericIPAddressField(unique=True)
     iaas_state = models.IntegerField(null=True, choices=IAAS_STATE_CHOICES)
     iaas_configuration = models.TextField(
@@ -36,8 +36,8 @@ class Container(models.Model):
     cpu = models.TextField(max_length=120, default="1")
     ram = models.TextField(max_length=120, default="512M")
     application_type = models.TextField(max_length=120, default="video")
-    ip_address = models.TextField(max_length=120)
-    port = models.IntegerField()
+    ip_address = models.TextField(max_length=120,null=True)
+    port = models.IntegerField(null=True)
 
 
 class Client(models.Model):
